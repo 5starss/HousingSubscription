@@ -1,0 +1,14 @@
+# 가상 환경 (폴더명은 보통 venv 또는 env)
+venv/
+env/
+.venv/
+
+# 파이썬 컴파일 캐시 (필수)
+__pycache__/
+*.pyc
+
+# 환경 변수
+.env
+
+# PyCharm 등 설정
+.idea/

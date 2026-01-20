@@ -1,0 +1,11 @@
+# 빌드 결과물 (Gradle 기준)
+/build/
+/.gradle/
+/out/
+
+# 로그 파일
+*.log
+
+# 중요 환경변수
+application-secret.yml
+application-prod.yml

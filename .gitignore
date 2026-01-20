@@ -1,0 +1,8 @@
+# OS 관련 (Mac, Windows)
+.DS_Store
+Thumbs.db
+
+# 에디터/IDE 관련 (IntelliJ, VSCode)
+.idea/
+.vscode/
+*.iml

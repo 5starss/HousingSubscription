@@ -1,0 +1,11 @@
+# 의존성 모듈 (절대 커밋 금지 - 용량 큼)
+/node_modules
+
+# 빌드 결과물
+/build
+/dist
+
+# 환경 변수 (API 키 등)
+.env
+.env.local
+.env.production
