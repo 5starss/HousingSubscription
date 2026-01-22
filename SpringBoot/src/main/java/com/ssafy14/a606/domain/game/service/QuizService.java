@@ -6,6 +6,7 @@ import com.ssafy14.a606.domain.game.entity.QuizQuestion;
 import com.ssafy14.a606.domain.game.repository.QuizQuestionRepository;
 import com.ssafy14.a606.domain.game.dto.response.QuizQuestionResponse;
 
+import com.ssafy14.a606.global.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,7 @@ public class QuizService {
     public QuizAnswerResponse submitAnswer(QuizAnswerRequest request) {
 
         QuizQuestion quizQuestion = quizQuestionRepository.findById(request.getQuestionId())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 문제 ID입니다."));
+                .orElseThrow(() -> new NotFoundException("유효하지 않은 문제 ID입니다."));
 
         String correct = normalize(quizQuestion.getAnswer());
         String userAnswer = normalize(request.getAnswer());
