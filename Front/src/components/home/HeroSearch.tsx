@@ -28,7 +28,7 @@ export default function HeroSearch() {
             type="text"
           />
           <button className="bg-primary text-white p-3 rounded-2xl hover:scale-105 shadow-lg shadow-primary/20 transition-transform">
-            <span className="material-symbols-outlined">arrow_upward</span>
+            <span className="material-symbols-outlined">arrow_upward</span> 
           </button>
         </div>
       </div>
