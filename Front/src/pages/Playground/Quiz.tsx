@@ -12,6 +12,12 @@ type QuizQuestion = {
 
 type QuizStatus = "question" | "correct" | "wrong";
 
+type QuizAnswerResponse = {
+  isCorrect: boolean;
+  correctAnswer: string;
+  explanation: string;
+};
+
 export default function Quiz() {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,61 +29,61 @@ export default function Quiz() {
 
   const currentQuestion = questions[currentIndex];
 
-  // ------------------------------------
-  // 퀴즈 시작 API (백엔드 연결 전 → 주석)
-  // ------------------------------------
   useEffect(() => {
-    /*
     const fetchQuiz = async () => {
-      const res = await fetch("/api/games/quiz/start", {
+      try {
+        const res = await fetch("/api/games/quiz/start", {
+          credentials: "include",
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        // ✅ 현재 백엔드 응답: 배열 그 자체
+        //    (혹시 나중에 {questions: []}로 바뀌어도 대응)
+        const list: QuizQuestion[] = Array.isArray(data) ? data : data?.questions ?? [];
+
+        setQuestions(list);
+        setCurrentIndex(0);
+        setStatus("question");
+      } catch {
+        // 필요 시 에러 처리 확장
+      }
+    };
+
+    fetchQuiz();
+  }, []);
+
+  const handleSubmitAnswer = async () => {
+    if (!currentQuestion) return;
+
+    try {
+      const res = await fetch("/api/games/quiz/answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
+        body: JSON.stringify({
+          questionId: currentQuestion.questionId,
+          answer: answer.trim(),
+        }),
       });
 
       if (!res.ok) return;
 
-      const data = await res.json();
-      setQuestions(data.questions);
-    };
+      const data: QuizAnswerResponse = await res.json();
 
-    fetchQuiz();
-    */
+      console.log("answer raw:", JSON.stringify(answer));
+      console.log("answer len:", answer.length);
+      console.log("correct raw:", JSON.stringify(data.correctAnswer));
+      console.log("correct len:", data.correctAnswer.length);
 
-    // 임시 더미 데이터 (화면 개발용)
-    setQuestions([
-      {
-        questionId: 1,
-        question:
-          "전체 가구를 소득 순으로 나열했을 때 가운데에 해당하는 가구의 소득을 의미하는 기준은 무엇일까요?",
-      },
-    ]);
-  }, []);
-
-  // ------------------------------------
-  // 정답 제출 (백엔드 연결 전 → 더미 처리)
-  // ------------------------------------
-  const handleSubmitAnswer = async () => {
-    /*
-    const res = await fetch("/api/games/quiz/answer", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        questionId: currentQuestion.questionId,
-        answer,
-      }),
-    });
-
-    const data = await res.json();
-    */
-
-    // 임시 판별 로직
-    const isCorrect = answer === "중위소득";
-
-    setCorrectAnswer("중위소득");
-    setExplanation(
-      "중위소득은 모든 가구를 소득 순으로 나열했을 때 가운데에 위치한 가구의 소득을 의미합니다."
-    );
-    setStatus(isCorrect ? "correct" : "wrong");
+      setCorrectAnswer(data.correctAnswer ?? "");
+      setExplanation(data.explanation ?? "");
+      setStatus(data.isCorrect ? "correct" : "wrong");
+    } catch {
+      // 필요 시 에러 처리 확장
+    }
   };
 
   const handleNextQuestion = () => {
@@ -85,16 +91,26 @@ export default function Quiz() {
     setCorrectAnswer("");
     setExplanation("");
     setStatus("question");
-    setCurrentIndex((prev) => prev + 1);
+
+    setCurrentIndex((prev) => {
+      const next = prev + 1;
+      return next < questions.length ? next : prev; // 범위 초과 방지
+    });
   };
+
+  // 선택: 로딩/빈 데이터 구분
+  if (questions.length === 0) {
+    return (
+      <main className="flex-1 px-4 md:px-20 lg:px-40 py-12 flex items-center justify-center">
+        <div className="text-gray-600">문제를 불러오는 중입니다.</div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex-1 px-4 md:px-20 lg:px-40 py-12 flex flex-col items-center">
       <div className="w-full max-w-3xl flex flex-col gap-8">
-        <QuizHeader
-          currentIndex={currentIndex}
-          totalCount={questions.length}
-        />
+        <QuizHeader currentIndex={currentIndex} totalCount={questions.length} />
 
         {status === "question" && (
           <QuizQuestionView
