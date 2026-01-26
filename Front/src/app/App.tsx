@@ -4,6 +4,8 @@ import HomePage from "../pages/HomePage";
 import NoticesPage from "../pages/NoticesPage";
 import Playground from "../pages/Playground/Playground";
 import Quiz from "../pages/Playground/Quiz";
+import SignupPage from "../pages/SignupPage";
+import LoginPage from "../pages/LoginPage";
 
 export default function App() {
   return (
@@ -16,6 +18,8 @@ export default function App() {
             <Route index element={<Playground />} />
             <Route path="quiz" element={<Quiz />} />
           </Route>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>
