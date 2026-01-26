@@ -2,6 +2,7 @@ import HeroSearch from "../components/home/HeroSearch";
 // import QuickCards from "../components/home/QuickCards";
 import NoticeCarousel from "../components/home/NoticeCarousel";
 import LoginCard from "../components/home/LoginCard";
+import RelatedSites from "../components/home/RelatedSites";
 
 export default function HomePage() {
   return (
@@ -16,6 +17,7 @@ export default function HomePage() {
       </section>
       {/* <QuickCards /> */}
       <NoticeCarousel />
+      <RelatedSites />
     </>
   );
 }
