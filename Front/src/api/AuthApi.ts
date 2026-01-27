@@ -18,9 +18,10 @@ interface LoginData {
 
 // 로그인 응답 데이터
 interface LoginResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   userName: string;
-  message?: string; // 선택적 속성
+  userRole: string;
 }
 
 // 아이디 중복 확인
