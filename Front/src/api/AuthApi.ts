@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/users";
+const BASE_URL = "/api";
 
 // 회원가입 데이터
 interface SignupData {
@@ -13,7 +13,7 @@ interface SignupData {
 // 아이디 중복 확인
 export const checkIdDuplicate = async (userId: string): Promise<boolean> => {
   try {
-    const response = await fetch(`${BASE_URL}/check?type=loginId&value=${userId}`);
+    const response = await fetch(`${BASE_URL}/users/check?type=loginId&value=${userId}`);
     
     if (!response.ok) {
         return false;
@@ -52,7 +52,7 @@ export const verifyCode = async (code: string): Promise<boolean> => {
 // 회원가입 요청
 export const registerUser = async (userData: SignupData): Promise<boolean> => {
   try {
-    const response = await fetch(`${BASE_URL}/signup`, {
+    const response = await fetch(`${BASE_URL}/users/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
