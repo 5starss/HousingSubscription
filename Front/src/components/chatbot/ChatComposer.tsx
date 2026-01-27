@@ -1,3 +1,4 @@
+// Front\src\components\chatbot\ChatComposer.tsx => Quick Action 버튼 & 채팅 적는 공간
 type QuickAction = {
   icon: string;
   label: string;

@@ -1,3 +1,4 @@
+// Front\src\components\chatbot\ChatMessageItem.tsx => 개별 채팅 메시지
 import type { ChatMessage } from "../../data/chat";
 
 type ChatMessageItemProps = {

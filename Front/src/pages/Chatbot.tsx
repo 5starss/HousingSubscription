@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { chatMessages } from "../data/chat";
 import type { ChatMessage } from "../data/chat";
 
@@ -12,6 +12,16 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
 
   const todayLabel = useMemo(() => "오늘, 11월 12일", []);
+
+  useEffect(() => {
+    // 렌더가 끝난 다음 높이 계산이 정확해지도록 한 프레임 늦춤
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    });
+  }, [messages.length]);
 
   const handleSend = () => {
     const value = input.trim();
