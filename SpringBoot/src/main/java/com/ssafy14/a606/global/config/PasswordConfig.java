@@ -1,4 +1,4 @@
-package com.ssafy14.a606.global.security.config;
+package com.ssafy14.a606.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
