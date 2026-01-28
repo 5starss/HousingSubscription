@@ -1,5 +1,6 @@
 // Front/src/components/notices/NoticeListSection.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
+import axios, { AxiosError } from "axios";
 import type { Notice } from "../../pages/NoticesPage";
 import { categoryLabel, statusLabel } from "../../utils/noticeFormat";
 
@@ -10,6 +11,18 @@ type Props = {
   items: Notice[];
   loading: boolean;
   errorMessage: string | null;
+};
+
+type FavoriteSuccessResponse = {
+  code: string;
+  message: string;
+  noticeId: number;
+  isFavorite: boolean;
+};
+
+type ApiErrorResponse = {
+  code?: string;
+  message?: string;
 };
 
 function formatDateRange(start: string | null, end: string | null) {
@@ -50,7 +63,7 @@ function getDDayInfo(endDate: string | null) {
 
   if (diffDays > 0) return { text: `D-${diffDays}`, daysLeft: diffDays };
   if (diffDays === 0) return { text: "D-DAY", daysLeft: 0 };
-  return { text: null, daysLeft: diffDays }; // 지난 날짜
+  return { text: null, daysLeft: diffDays };
 }
 
 function ddayTone(daysLeft: number | null) {
@@ -65,26 +78,17 @@ function rightTone() {
 }
 
 function HeartIcon({ active }: { active: boolean }) {
-  if (active) {
-    return (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M12 21s-7.2-4.7-9.6-9.2C.7 8.5 2.3 5.4 5.6 4.6c1.7-.4 3.5.2 4.7 1.5L12 7.9l1.7-1.8c1.2-1.3 3-1.9 4.7-1.5 3.3.8 4.9 3.9 3.2 7.2C19.2 16.3 12 21 12 21z"
-          fill="#EF4444"
-        />
-      </svg>
-    );
-  }
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M12.1 20.3s-6.9-4.4-9.1-8.7C1.5 8.6 3 5.9 5.8 5.2c1.5-.4 3.1.2 4.2 1.4L12 8.3l2-1.7c1.1-1.2 2.7-1.8 4.2-1.4 2.8.7 4.3 3.4 2.8 6.4-2.2 4.3-8.9 8.7-8.9 8.7z"
-        stroke="#9CA3AF"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <span
+      className={[
+        "material-symbols-outlined text-[22px] transition-all",
+        active
+          ? "text-red-500"
+          : "text-gray-400 group-hover:text-red-400",
+      ].join(" ")}
+    >
+      {active ? "favorite" : "favorite_border"}
+    </span>
   );
 }
 
@@ -123,7 +127,6 @@ function isNew(regDate: string | null, days = 7) {
 }
 
 function isClosedNotice(n: Notice) {
-  // endDate가 있으면 날짜를 최우선으로 판단
   if (n.endDate) {
     const end = new Date(n.endDate);
     if (!Number.isNaN(end.getTime())) {
@@ -131,15 +134,11 @@ function isClosedNotice(n: Notice) {
       const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const startOfEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate());
 
-      // 오늘 포함(= D-DAY 포함)은 마감으로 보지 않음
       if (startOfEnd.getTime() >= startOfToday.getTime()) return false;
-
-      // 과거면 마감
       return true;
     }
   }
 
-  // endDate가 없거나 파싱 실패 시에만 status 기반으로 판단
   const label = statusLabel(n.status);
   const normalized = String(label).replace(/\s+/g, "");
   return normalized.includes("마감") || normalized.includes("종료");
@@ -152,6 +151,49 @@ function dateToMs(dateStr: string | null, fallback: string) {
 export default function NoticeListSection({ totalCount, items, loading }: Props) {
   const [sortType, setSortType] = useState<SortType>("REG_DATE");
   const [open, setOpen] = useState(false);
+
+  // 찜 상태(로컬 UI 반영용)
+  const [favoriteMap, setFavoriteMap] = useState<Record<number, boolean>>({});
+
+  const isLoggedIn = () => {
+    // 프로젝트 토큰 키에 맞게 수정하세요.
+    return Boolean(localStorage.getItem("accessToken"));
+  };
+
+  const addFavorite = async (noticeId: number) => {
+    if (!isLoggedIn()) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      const res = await axios.post<FavoriteSuccessResponse>(
+        `/api/notices/favorites/${noticeId}`
+      );
+
+      setFavoriteMap((prev) => ({
+        ...prev,
+        [res.data.noticeId]: res.data.isFavorite,
+      }));
+    } catch (err) {
+      const ax = err as AxiosError<ApiErrorResponse>;
+      const status = ax.response?.status;
+      const msg = ax.response?.data?.message ?? "요청 처리 중 오류가 발생했습니다.";
+
+      if (status === 409) {
+        alert(msg);
+        setFavoriteMap((prev) => ({ ...prev, [noticeId]: true }));
+        return;
+      }
+
+      if (status === 401 || status === 403) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
+      alert(msg);
+    }
+  };
 
   // 드롭박스 밖 클릭 닫기
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -175,23 +217,17 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
 
     return copied.sort((a, b) => {
       if (sortType === "REG_DATE") {
-        return (
-          dateToMs(b.regDate, "1970-01-01") - dateToMs(a.regDate, "1970-01-01")
-        );
+        return dateToMs(b.regDate, "1970-01-01") - dateToMs(a.regDate, "1970-01-01");
       }
 
-      // 마감 임박순:
-      // 1) 접수마감은 항상 아래
       const aClosed = isClosedNotice(a);
       const bClosed = isClosedNotice(b);
       if (aClosed !== bClosed) return aClosed ? 1 : -1;
 
-      // 2) (둘 다 접수마감이 아니거나, 둘 다 접수마감이면) endDate 빠른 순
       const endDiff =
         dateToMs(a.endDate, "9999-12-31") - dateToMs(b.endDate, "9999-12-31");
       if (endDiff !== 0) return endDiff;
 
-      // 3) tie-break: regDate 최신 순
       return dateToMs(b.regDate, "1970-01-01") - dateToMs(a.regDate, "1970-01-01");
     });
   }, [items, sortType]);
@@ -272,7 +308,6 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
 
             const { text: ddayText, daysLeft } = getDDayInfo(n.endDate);
 
-            // D-day가 아닌(= statusText를 보여줄 때) 색은 기존처럼 primary, D-day면 조건부 색상
             const isClosed = isClosedNotice(n);
             const rightTextClass = isClosed
               ? "text-gray-400"
@@ -280,15 +315,15 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
               ? ddayTone(daysLeft)
               : rightTone();
 
-            const isFavorite = false;
+            const isFavorite = Boolean(favoriteMap[n.id]);
 
             const normalizedStatus = statusText.replace(/\s+/g, "");
             const badgeText =
-                normalizedStatus === "접수중"
-                  ? "접수중"
-                  : normalizedStatus === "마감임박" || n.status === "DEADLINE_APPROACHING"
-                  ? "마감임박"
-                  : null;
+              normalizedStatus === "접수중"
+                ? "접수중"
+                : normalizedStatus === "마감임박" || n.status === "DEADLINE_APPROACHING"
+                ? "마감임박"
+                : null;
 
             return (
               <article
@@ -335,13 +370,23 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
 
                 <div className="flex items-center justify-between md:justify-end gap-6 md:pl-2">
                   <div className="flex flex-col items-center justify-center text-center min-w-[72px]">
+                    {/* 뱃지 부분은 요청대로 수정하지 않고 그대로 둠 */}
                     {badgeText && (
-                      <span className="mb-1 inline-flex shrink-0 items-center justify-center rounded bg-[#F3F4F6] px-[6px] py-[2px] text-[10px] font-bold">
+                      <span
+                        className={[
+                          "mb-1.5 inline-flex shrink-0 items-center justify-center rounded-md px-2 py-1 text-[11px] font-bold leading-none tracking-tight",
+                          badgeText === "접수중"
+                            ? "bg-emerald-50 text-emerald-600 ring-1 ring-inset ring-emerald-600/20"
+                            : "bg-rose-50 text-rose-600 ring-1 ring-inset ring-rose-600/20",
+                        ].join(" ")}
+                      >
                         {badgeText}
                       </span>
                     )}
 
-                    <div className={`text-l font-bold tracking-tight whitespace-nowrap ${rightTextClass}`}>
+                    <div
+                      className={`text-l font-bold tracking-tight whitespace-nowrap ${rightTextClass}`}
+                    >
                       {rightText}
                     </div>
                   </div>
@@ -350,12 +395,11 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
                     type="button"
                     className="p-1 rounded-full hover:bg-gray-50 transition-colors"
                     aria-label="관심 공고 등록"
-                    onClick={() => {}}
+                    onClick={() => addFavorite(n.id)}
                   >
                     <HeartIcon active={isFavorite} />
                   </button>
                 </div>
-
               </article>
             );
           })
