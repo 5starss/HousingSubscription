@@ -1,3 +1,5 @@
+import { type User } from "../types/auth";  // User 인터페이스
+
 const BASE_URL = "/api";
 
 // 회원가입 데이터
@@ -14,14 +16,6 @@ interface SignupData {
 interface LoginData {
   loginId: string;
   password: string;
-}
-
-// 로그인 응답 데이터
-interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-  userName: string;
-  userRole: string;
 }
 
 // 아이디 중복 확인
@@ -94,7 +88,7 @@ export const registerUser = async (userData: SignupData): Promise<boolean> => {
 };
 
 // 로그인 요청
-export const login = async (loginData: LoginData): Promise<LoginResponse | null> => {
+export const login = async (loginData: LoginData): Promise<User | null> => {
   try {
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
@@ -108,7 +102,7 @@ export const login = async (loginData: LoginData): Promise<LoginResponse | null>
     });
 
     if (response.ok) {
-      const data: LoginResponse = await response.json();
+      const data: User = await response.json();
       console.log("로그인 성공:", data);
       return data;
     } else {
