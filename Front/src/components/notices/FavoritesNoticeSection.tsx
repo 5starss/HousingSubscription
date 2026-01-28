@@ -1,20 +1,9 @@
 // Front/src/components/notices/FavoritesNoticeSection.tsx
 
-type FavoriteNotice = {
-  id: number;
-  no: string;
-  title: string;
-  category: string;
-  reg_date: string;
-  status: string;
-  start_date: string | null;
-  end_date: string | null;
-  pdf: string | null;
-  url: string;
-};
+import type { Notice } from "../../pages/NoticesPage";
 
 type Props = {
-  items: FavoriteNotice[];
+  items: Notice[];
 };
 
 export default function FavoritesNoticeSection({ items }: Props) {
