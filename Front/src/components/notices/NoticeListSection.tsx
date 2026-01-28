@@ -25,6 +25,14 @@ type ApiErrorResponse = {
   message?: string;
 };
 
+type FavoriteListItem = {
+  id: number;
+};
+
+type MeResponse = {
+  userId: number;
+};
+
 function formatDateRange(start: string | null, end: string | null) {
   const s = start ?? "-";
   const e = end ?? "-";
@@ -82,9 +90,7 @@ function HeartIcon({ active }: { active: boolean }) {
     <span
       className={[
         "material-symbols-outlined text-[22px] transition-all",
-        active
-          ? "text-red-500"
-          : "text-gray-400 group-hover:text-red-400",
+        active ? "text-red-500" : "text-gray-400 group-hover:text-red-400",
       ].join(" ")}
     >
       {active ? "favorite" : "favorite_border"}
@@ -148,37 +154,124 @@ function dateToMs(dateStr: string | null, fallback: string) {
   return new Date(dateStr ?? fallback).getTime();
 }
 
+function getToken() {
+  return localStorage.getItem("accessToken");
+}
+
+function authHeaders() {
+  const token = getToken();
+  if (!token) return null;
+  return { Authorization: `Bearer ${token}` };
+}
+
 export default function NoticeListSection({ totalCount, items, loading }: Props) {
   const [sortType, setSortType] = useState<SortType>("REG_DATE");
   const [open, setOpen] = useState(false);
 
-  // 찜 상태(로컬 UI 반영용)
   const [favoriteMap, setFavoriteMap] = useState<Record<number, boolean>>({});
+  const [favoritePending, setFavoritePending] = useState<Record<number, boolean>>({});
 
-  const isLoggedIn = () => {
-    // 프로젝트 토큰 키에 맞게 수정하세요.
-    return Boolean(localStorage.getItem("accessToken"));
-  };
+  // 실행중인 백엔드가 userId를 path로 요구하므로 /me로 userId 확보
+  const [userId, setUserId] = useState<number | null>(null);
 
-  const addFavorite = async (noticeId: number) => {
-    if (!isLoggedIn()) {
+  useEffect(() => {
+    const headers = authHeaders();
+    if (!headers) return;
+
+    let ignore = false;
+
+    (async () => {
+      try {
+        const res = await axios.get<MeResponse>("/api/users/me", { headers });
+        if (ignore) return;
+        setUserId(res.data.userId);
+      } catch {
+        if (ignore) return;
+        setUserId(null);
+      }
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  // userId 확보 후 찜 목록 로딩 (GET /favorites/{userId})
+  useEffect(() => {
+    const headers = authHeaders();
+    if (!headers || !userId) return;
+
+    let ignore = false;
+
+    (async () => {
+      try {
+        const res = await axios.get<FavoriteListItem[]>(
+          `/api/notices/favorites/${userId}`,
+          { headers }
+        );
+        if (ignore) return;
+
+        const next: Record<number, boolean> = {};
+        for (const fav of res.data) {
+          if (typeof fav?.id === "number") next[fav.id] = true;
+        }
+        setFavoriteMap(next);
+      } catch {
+        // 비로그인/오류면 조용히 무시
+      }
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [userId]);
+
+  // 토글: POST/DELETE 모두 /favorites/{userId}/{noticeId}
+  const toggleFavorite = async (noticeId: number) => {
+    const headers = authHeaders();
+    if (!headers) {
       alert("로그인이 필요합니다.");
       return;
     }
+    if (!userId) {
+      alert("사용자 정보를 불러오는 중입니다.");
+      return;
+    }
+
+    if (favoritePending[noticeId]) return;
+
+    const currently = Boolean(favoriteMap[noticeId]);
+
+    setFavoritePending((prev) => ({ ...prev, [noticeId]: true }));
+    setFavoriteMap((prev) => ({ ...prev, [noticeId]: !currently }));
 
     try {
-      const res = await axios.post<FavoriteSuccessResponse>(
-        `/api/notices/favorites/${noticeId}`
-      );
+      const res = currently
+        ? await axios.delete<FavoriteSuccessResponse>(
+            `/api/notices/favorites/${userId}/${noticeId}`,
+            { headers }
+          )
+        : await axios.post<FavoriteSuccessResponse>(
+            `/api/notices/favorites/${userId}/${noticeId}`,
+            null,
+            { headers }
+          );
 
       setFavoriteMap((prev) => ({
         ...prev,
         [res.data.noticeId]: res.data.isFavorite,
       }));
     } catch (err) {
+      setFavoriteMap((prev) => ({ ...prev, [noticeId]: currently }));
+
       const ax = err as AxiosError<ApiErrorResponse>;
       const status = ax.response?.status;
       const msg = ax.response?.data?.message ?? "요청 처리 중 오류가 발생했습니다.";
+
+      if (status === 401 || status === 403) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
 
       if (status === 409) {
         alert(msg);
@@ -186,12 +279,9 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
         return;
       }
 
-      if (status === 401 || status === 403) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
-
       alert(msg);
+    } finally {
+      setFavoritePending((prev) => ({ ...prev, [noticeId]: false }));
     }
   };
 
@@ -316,6 +406,7 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
               : rightTone();
 
             const isFavorite = Boolean(favoriteMap[n.id]);
+            const isPending = Boolean(favoritePending[n.id]);
 
             const normalizedStatus = statusText.replace(/\s+/g, "");
             const badgeText =
@@ -370,7 +461,6 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
 
                 <div className="flex items-center justify-between md:justify-end gap-6 md:pl-2">
                   <div className="flex flex-col items-center justify-center text-center min-w-[72px]">
-                    {/* 뱃지 부분은 요청대로 수정하지 않고 그대로 둠 */}
                     {badgeText && (
                       <span
                         className={[
@@ -384,18 +474,17 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
                       </span>
                     )}
 
-                    <div
-                      className={`text-l font-bold tracking-tight whitespace-nowrap ${rightTextClass}`}
-                    >
+                    <div className={`text-l font-bold tracking-tight whitespace-nowrap ${rightTextClass}`}>
                       {rightText}
                     </div>
                   </div>
 
                   <button
                     type="button"
-                    className="p-1 rounded-full hover:bg-gray-50 transition-colors"
+                    className="p-1 rounded-full hover:bg-gray-50 transition-colors disabled:opacity-60"
                     aria-label="관심 공고 등록"
-                    onClick={() => addFavorite(n.id)}
+                    onClick={() => toggleFavorite(n.id)}
+                    disabled={isPending}
                   >
                     <HeartIcon active={isFavorite} />
                   </button>
