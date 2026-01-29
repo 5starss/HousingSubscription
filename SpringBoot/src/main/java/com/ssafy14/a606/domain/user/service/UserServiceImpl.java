@@ -7,6 +7,8 @@ import com.ssafy14.a606.domain.user.dto.response.UserResponseDto;
 import com.ssafy14.a606.domain.user.entity.AuthType;
 import com.ssafy14.a606.domain.user.entity.Role;
 import com.ssafy14.a606.domain.user.entity.User;
+import com.ssafy14.a606.domain.user.entity.UserDetails;
+import com.ssafy14.a606.domain.user.repository.UserDetailsRepository;
 import com.ssafy14.a606.domain.user.repository.UserRepository;
 import com.ssafy14.a606.global.exceptions.DuplicateValueException;
 import com.ssafy14.a606.global.exceptions.InvalidValueException;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsRepository userDetailsRepository;
 
     // 1. 회원가입
     @Override
@@ -57,6 +60,13 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         User saved = userRepository.save(user);
+
+        // 회원가입 시 user_details 테이블에 빈 row 생성
+        UserDetails details = UserDetails.builder()
+                .user(saved)
+                .build();
+
+        userDetailsRepository.save(details);
 
         return new SignUpResponseDto(saved.getId(), saved.getUserName(), saved.getRole().name());
     }
