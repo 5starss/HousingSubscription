@@ -48,14 +48,6 @@ public class UserController {
         return ResponseEntity.ok(userDetailsService.getMyDetails(principal.getUserId()));
     }
 
-    // 추가정보 입력
-    @PostMapping("/me/info")
-    public ResponseEntity<UserDetailsResponseDto> createDetailInfo(
-            @AuthenticationPrincipal CustomUserDetails principal,
-            @RequestBody UserDetailsRequestDto dto
-    ) {
-        return ResponseEntity.ok(userDetailsService.createMyDetails(principal.getUserId(), dto));
-    }
 
     // 추가정보 수정
     @PutMapping("/me/info")
