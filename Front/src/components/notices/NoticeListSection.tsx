@@ -78,19 +78,6 @@ function rightTone() {
   return "text-primary";
 }
 
-function HeartIcon({ active }: { active: boolean }) {
-  return (
-    <span
-      className={[
-        "material-symbols-outlined text-[22px] transition-all",
-        active ? "text-red-500" : "text-gray-400 group-hover:text-red-400",
-      ].join(" ")}
-    >
-      {active ? "favorite" : "favorite_border"}
-    </span>
-  );
-}
-
 function SkeletonRow() {
   return (
     <div className="rounded-[20px] bg-white p-6 shadow-sm border border-gray-100">
@@ -422,15 +409,19 @@ export default function NoticeListSection({ totalCount, items, loading, onChange
 
                   <button
                     type="button"
-                    className="p-1 rounded-full hover:bg-gray-50 transition-colors disabled:opacity-60"
-                    aria-label="관심 공고 등록"
+                    className={[
+                      "p-1 rounded-full transition-colors disabled:opacity-60",
+                      "hover:bg-gray-50",
+                      isFavorite ? "text-red-500 hover:text-red-600" : "text-gray-400 hover:text-red-400",
+                    ].join(" ")}
+                    aria-label={isFavorite ? "찜 해제" : "찜"}
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleFavorite(n.id);
                     }}
                     disabled={isPending}
                   >
-                    <HeartIcon active={isFavorite} />
+                    ❤
                   </button>
 
                 </div>
