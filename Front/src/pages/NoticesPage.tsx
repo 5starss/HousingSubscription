@@ -1,5 +1,5 @@
 // Front/src/pages/NoticesPage.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { AxiosError } from "axios";
 import { getFavoriteNotices, getNoticeList, type FavoriteNotice } from "../api/NoticeApi";
 
@@ -92,18 +92,21 @@ export default function NoticesPage() {
     url: f.url ?? null,
   });
 
-  const loadFavorites = async (ignore?: boolean): Promise<void> => {
-    try {
-      const favList = await getFavoriteNotices();
-      if (ignore) return;
-      setFavorites((favList ?? []).map(mapFavoriteToNotice));
-      setFavoritesVersion((v) => v + 1);
-    } catch {
-      if (ignore) return;
-      setFavorites([]);
-      setFavoritesVersion((v) => v + 1);
-    }
-  };
+  const loadFavorites = useCallback(
+    async (ignore?: boolean): Promise<void> => {
+      try {
+        const favList = await getFavoriteNotices();
+        if (ignore) return;
+        setFavorites((favList ?? []).map(mapFavoriteToNotice));
+        setFavoritesVersion((v) => v + 1);
+      } catch {
+        if (ignore) return;
+        setFavorites([]);
+        setFavoritesVersion((v) => v + 1);
+      }
+    },
+    []
+  );
 
   // 목록 로딩
   useEffect(() => {
@@ -138,7 +141,7 @@ export default function NoticesPage() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [loadFavorites]);
 
   // 필터 변경 시 1페이지로
   useEffect(() => {
