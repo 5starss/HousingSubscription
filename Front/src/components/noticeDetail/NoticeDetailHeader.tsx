@@ -5,9 +5,9 @@ import { statusLabel } from "../../utils/noticeFormat";
 import {
   addFavoriteNotice,
   getFavoriteNotices,
-  getMe,
   removeFavoriteNotice,
 } from "../../api/NoticeApi";
+
 
 type Props = {
   noticeId: number | null;
@@ -55,9 +55,6 @@ export default function NoticeDetailHeader({
   onBack,
   onShare,
 }: Props) {
-  const [userId, setUserId] = useState<number | null>(null);
-  const [meLoaded, setMeLoaded] = useState(false);
-
   const [isFavorite, setIsFavorite] = useState(false);
   const [favPending, setFavPending] = useState(false);
 
@@ -73,27 +70,14 @@ export default function NoticeDetailHeader({
 
     (async () => {
       try {
-        const me = await getMe();
+        const favorites = await getFavoriteNotices();
         if (ignore) return;
 
-        setUserId(me.userId);
-        setMeLoaded(true);
-
-        try {
-          const favorites = await getFavoriteNotices(me.userId);
-          if (ignore) return;
-
-          const favored = favorites.some((f) => f?.id === noticeId);
-          setIsFavorite(favored);
-        } catch {
-          // 찜 목록 로딩 실패는 일단 무시
-          setIsFavorite(false);
-        }
+        const favored = favorites.some((f) => f?.id === noticeId);
+        setIsFavorite(favored);
       } catch {
-        if (ignore) return;
-        setUserId(null);
-        setMeLoaded(true);
-        setIsFavorite(false);
+        // 로그인 안 됐거나 에러 → 찜 아님으로 처리
+        if (!ignore) setIsFavorite(false);
       }
     })();
 
@@ -102,19 +86,10 @@ export default function NoticeDetailHeader({
     };
   }, [noticeId, loading]);
 
+
   // 2) 찜 토글
   const onFavorite = async () => {
-    if (!noticeId) return;
-
-    if (!meLoaded) {
-      alert("사용자 정보를 불러오는 중입니다.");
-      return;
-    }
-    if (!userId) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
-    if (favPending) return;
+    if (!noticeId || favPending) return;
 
     const currently = isFavorite;
 
@@ -123,13 +98,13 @@ export default function NoticeDetailHeader({
 
     try {
       const data = currently
-        ? await removeFavoriteNotice(userId, noticeId)
-        : await addFavoriteNotice(userId, noticeId);
+        ? await removeFavoriteNotice(noticeId)
+        : await addFavoriteNotice(noticeId);
 
       setIsFavorite(Boolean(data.isFavorite));
     } catch {
       setIsFavorite(currently);
-      alert("요청 처리 중 오류가 발생했습니다.");
+      alert("로그인이 필요하거나 요청 처리 중 오류가 발생했습니다.");
     } finally {
       setFavPending(false);
     }

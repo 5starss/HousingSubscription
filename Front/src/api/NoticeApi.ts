@@ -28,64 +28,57 @@ function normalizeNoticeDetail(data: unknown): Notice {
   };
 }
 
-// 상세는 여기서 정규화까지 하고 Notice로 반환 (추가 함수 없이 통일)
 export async function getNoticeDetail(id: number): Promise<Notice> {
   const res = await apiClient.get<unknown>(`/notices/${id}`);
   return normalizeNoticeDetail(res.data);
 }
 
-type FavoriteSuccessResponse = {
+/**
+ * [찜한 공고 목록 조회]
+ * GET /api/notices/favorites
+ */
+export type FavoriteNotice = {
+  id: number;
+  no: string;
+  title: string;
+  category: string;
+  reg_date: string;
+  status: string;
+  start_date: string | null;
+  end_date: string | null;
+  pdf: string | null;
+  url: string;
+};
+
+export async function getFavoriteNotices(): Promise<FavoriteNotice[]> {
+  const res = await apiClient.get<FavoriteNotice[]>("/notices/favorites");
+  return res.data ?? [];
+}
+
+/**
+ * [공고 찜하기]
+ * POST /api/notices/favorites/{id}
+ *
+ * [찜한 공고 삭제]
+ * DELETE /api/notices/favorites/{id}
+ */
+export type FavoriteSuccessResponse = {
   code: string;
   message: string;
   noticeId: number;
   isFavorite: boolean;
 };
 
-type FavoriteListItem = {
-  id: number;
-};
-
-type MeResponse = {
-  userId: number;
-};
-
-export async function getMe(): Promise<MeResponse> {
-  const res = await apiClient.get<MeResponse>("/users/me");
-  return res.data;
-}
-
-export async function getFavoriteNotices(
-  userId: number
-): Promise<FavoriteListItem[]> {
-  const res = await apiClient.get<FavoriteListItem[]>(
-    `/notices/favorites/${userId}`
-  );
-  return res.data ?? [];
-}
-
 export async function addFavoriteNotice(
-  userId: number,
   noticeId: number
 ): Promise<FavoriteSuccessResponse> {
   const res = await apiClient.post<FavoriteSuccessResponse>(
-    `/notices/favorites/${userId}/${noticeId}`,
-    null
+    `/notices/favorites/${noticeId}`
   );
   return res.data;
 }
 
 export async function removeFavoriteNotice(
-  userId: number,
-  noticeId: number
-): Promise<FavoriteSuccessResponse> {
-  const res = await apiClient.delete<FavoriteSuccessResponse>(
-    `/notices/favorites/${userId}/${noticeId}`
-  );
-  return res.data;
-}
-
-// userId 없이 찜 해제하는 경우 (FavoritesNoticeSection용)
-export async function removeFavoriteNoticeByNoticeId(
   noticeId: number
 ): Promise<FavoriteSuccessResponse> {
   const res = await apiClient.delete<FavoriteSuccessResponse>(

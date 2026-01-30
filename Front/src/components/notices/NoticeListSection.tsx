@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import {
   addFavoriteNotice,
   getFavoriteNotices,
-  getMe,
   removeFavoriteNotice,
 } from "../../api/NoticeApi";
 
@@ -18,6 +17,8 @@ type Props = {
   items: Notice[];
   loading: boolean;
   errorMessage: string | null;
+  onChangedFavorites?: () => void;
+  favoritesVersion?: number;
 };
 
 type ApiErrorResponse = {
@@ -146,7 +147,7 @@ function dateToMs(dateStr: string | null, fallback: string) {
   return new Date(dateStr ?? fallback).getTime();
 }
 
-export default function NoticeListSection({ totalCount, items, loading }: Props) {
+export default function NoticeListSection({ totalCount, items, loading, onChangedFavorites }: Props) {
   const navigate = useNavigate();
 
   const [sortType, setSortType] = useState<SortType>("REG_DATE");
@@ -155,26 +156,28 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
   const [favoriteMap, setFavoriteMap] = useState<Record<number, boolean>>({});
   const [favoritePending, setFavoritePending] = useState<Record<number, boolean>>({});
 
-  const [userId, setUserId] = useState<number | null>(null);
-  const [meLoading, setMeLoading] = useState(false);
-  const [meLoaded, setMeLoaded] = useState(false);
-
-  // 1) /users/me로 userId 확보 (API는 NoticeApi.ts로)
   useEffect(() => {
     let ignore = false;
 
     (async () => {
-      setMeLoading(true);
       try {
-        const me = await getMe();
-        if (!ignore) setUserId(me.userId);
-      } catch {
-        if (!ignore) setUserId(null);
-      } finally {
-        if (!ignore) {
-          setMeLoaded(true);
-          setMeLoading(false);
+        const list = await getFavoriteNotices();
+        if (ignore) return;
+
+        const next: Record<number, boolean> = {};
+        for (const fav of list) {
+          if (typeof fav?.id === "number") next[fav.id] = true; // fav.id = noticeId
         }
+        setFavoriteMap(next);
+      } catch (err) {
+        // 로그인 안 된 경우(401/403)면 찜 맵 비움 정도로만 처리
+        const ax = err as AxiosError<ApiErrorResponse>;
+        const status = ax.response?.status;
+        if (status === 401 || status === 403) {
+          setFavoriteMap({});
+          return;
+        }
+        // 그 외는 무시
       }
     })();
 
@@ -183,42 +186,7 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
     };
   }, []);
 
-  // 2) userId 확보 후 찜 목록 로딩
-  useEffect(() => {
-    if (!userId) return;
-
-    let ignore = false;
-
-    (async () => {
-      try {
-        const list = await getFavoriteNotices(userId);
-        if (ignore) return;
-
-        const next: Record<number, boolean> = {};
-        for (const fav of list) {
-          if (typeof fav?.id === "number") next[fav.id] = true;
-        }
-        setFavoriteMap(next);
-      } catch {
-        // 무시
-      }
-    })();
-
-    return () => {
-      ignore = true;
-    };
-  }, [userId]);
-
-  // 3) 찜 토글
   const toggleFavorite = async (noticeId: number) => {
-    if (!meLoaded || meLoading) {
-      alert("사용자 정보를 불러오는 중입니다.");
-      return;
-    }
-    if (!userId) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
     if (favoritePending[noticeId]) return;
 
     const currently = Boolean(favoriteMap[noticeId]);
@@ -228,13 +196,16 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
 
     try {
       const data = currently
-        ? await removeFavoriteNotice(userId, noticeId)
-        : await addFavoriteNotice(userId, noticeId);
+        ? await removeFavoriteNotice(noticeId)
+        : await addFavoriteNotice(noticeId);
 
       setFavoriteMap((prev) => ({
         ...prev,
         [data.noticeId]: data.isFavorite,
       }));
+
+      onChangedFavorites?.();
+
     } catch (err) {
       setFavoriteMap((prev) => ({ ...prev, [noticeId]: currently }));
 
@@ -453,11 +424,15 @@ export default function NoticeListSection({ totalCount, items, loading }: Props)
                     type="button"
                     className="p-1 rounded-full hover:bg-gray-50 transition-colors disabled:opacity-60"
                     aria-label="관심 공고 등록"
-                    onClick={() => toggleFavorite(n.id)}
-                    disabled={isPending || meLoading}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(n.id);
+                    }}
+                    disabled={isPending}
                   >
                     <HeartIcon active={isFavorite} />
                   </button>
+
                 </div>
               </article>
             );

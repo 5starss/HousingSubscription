@@ -1,14 +1,15 @@
 // Front/src/components/notices/FavoritesNoticeSection.tsx
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 
 import type { Notice } from "../../pages/NoticesPage";
 import { categoryLabel, statusLabel } from "../../utils/noticeFormat";
-import { removeFavoriteNoticeByNoticeId } from "../../api/NoticeApi";
+import { removeFavoriteNotice } from "../../api/NoticeApi";
 
 type Props = {
   items: Notice[];
+  onChangedFavorites?: () => void;
 };
 
 type ApiErrorResponse = {
@@ -16,7 +17,7 @@ type ApiErrorResponse = {
   message?: string;
 };
 
-export default function FavoritesNoticeSection({ items }: Props) {
+export default function FavoritesNoticeSection({ items, onChangedFavorites }: Props) {
   const navigate = useNavigate();
 
   // 초기 렌더에서 props(items) 기준으로 "찜 상태"를 true로 세팅
@@ -29,6 +30,10 @@ export default function FavoritesNoticeSection({ items }: Props) {
   const [favoriteMap, setFavoriteMap] =
     useState<Record<number, boolean>>(initialFavoriteMap);
   const [pendingMap, setPendingMap] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    setFavoriteMap(initialFavoriteMap);
+  }, [initialFavoriteMap]);
 
   const visibleItems = useMemo(() => {
     // 화면에서는 isFavorite=false 된 항목은 숨김 처리
@@ -44,13 +49,16 @@ export default function FavoritesNoticeSection({ items }: Props) {
     setFavoriteMap((prev) => ({ ...prev, [noticeId]: false }));
 
     try {
-      const data = await removeFavoriteNoticeByNoticeId(noticeId);
+      const data = await removeFavoriteNotice(noticeId);
 
       // 서버 응답 기준으로 최종 반영
       setFavoriteMap((prev) => ({
         ...prev,
         [data.noticeId]: data.isFavorite,
       }));
+
+      onChangedFavorites?.();
+
     } catch (err) {
       // 실패 시 롤백
       setFavoriteMap((prev) => ({ ...prev, [noticeId]: true }));
@@ -101,7 +109,7 @@ export default function FavoritesNoticeSection({ items }: Props) {
                 {/* Favorite Icon */}
                 <button
                   type="button"
-                  className="absolute right-6 top-6 text-gray-300 hover:text-red-500 disabled:opacity-60"
+                  className="absolute right-6 top-6 text-red-500 hover:text-red-600 disabled:opacity-60"
                   aria-label="찜 해제"
                   disabled={isPending}
                   onClick={(e) => {
