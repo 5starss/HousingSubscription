@@ -11,6 +11,7 @@ from chatbot_service import get_rag_answer
 # 전역 상태 저장소
 app_state = {}
 
+# 배포 상황
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 한국어 전용 모델 로드 (서버 켜져 있는 동안 유지)
@@ -35,6 +36,33 @@ async def lifespan(app: FastAPI):
     yield
     # 서버 종료 시 정리 로직 (필요할 경우)
     app_state.clear()
+
+# # 로컬 상황
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     # 1. 임베딩 모델 로드 (동일)
+#     app_state["ko_embedding"] = embedding_functions.SentenceTransformerEmbeddingFunction(
+#         model_name="jhgan/ko-sroberta-multitask"
+#     )
+#
+#     # 2. 로컬 크로마DB 폴더 연결 (수정된 부분)
+#     # db_path는 실제 크로마DB 폴더가 있는 경로로 지정하세요. (예: "./chroma_db")
+#     db_path = os.getenv("CHROMA_DB_PATH", "./chroma_db")
+#
+#     try:
+#         # HttpClient 대신 PersistentClient 사용!
+#         client = chromadb.PersistentClient(path=db_path)
+#
+#         app_state["collection"] = client.get_collection(
+#             name="happy_house_rag",
+#             embedding_function=app_state["ko_embedding"]
+#         )
+#     except Exception as e:
+#         print(f"DB 연결 실패: {e}")
+#         app_state["collection"] = None
+#
+#     yield
+#     app_state.clear()
 
 
 # 1. 앱 생성
