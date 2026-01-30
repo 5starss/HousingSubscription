@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 
 import type { Notice } from "../../pages/NoticesPage";
-import { categoryLabel, statusLabel } from "../../utils/noticeFormat";
 import { removeFavoriteNotice } from "../../api/NoticeApi";
+import FavoritesNoticeCard from "./FavoritesNoticeCard";
 
 type Props = {
   items: Notice[];
@@ -172,50 +172,13 @@ export default function FavoritesNoticeSection({
               const isPending = Boolean(pendingMap[notice.id]);
 
               return (
-                <div
+                <FavoritesNoticeCard
                   key={notice.id}
-                  data-fav-card
+                  notice={notice}
+                  isPending={isPending}
                   onClick={() => navigate(`/notices/${notice.id}`)}
-                  className="
-                    relative cursor-pointer rounded-2xl border border-gray-100 bg-white p-6 shadow-sm
-                    transition hover:shadow-md
-                    shrink-0
-                    w-[calc((100%-2rem)/3)]
-                    min-w-[260px]
-                  "
-                >
-                  {/* Category */}
-                  <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                    {categoryLabel(notice.category)}
-                  </span>
-
-                  {/* Favorite Icon */}
-                  <button
-                    type="button"
-                    className="absolute right-6 top-6 text-red-500 hover:text-red-600 disabled:opacity-60"
-                    aria-label="찜 해제"
-                    disabled={isPending}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      unfavorite(notice.id);
-                    }}
-                  >
-                    ❤
-                  </button>
-
-                  {/* Title */}
-                  <h3 className="mt-4 line-clamp-2 text-base font-semibold text-gray-900">
-                    {notice.title}
-                  </h3>
-
-                  {/* Status */}
-                  <div className="mt-6 flex items-center justify-between">
-                    <span className="text-sm font-medium text-green-600">
-                      {statusLabel(notice.status)}
-                    </span>
-                    <span className="text-gray-300">→</span>
-                  </div>
-                </div>
+                  onUnfavorite={() => unfavorite(notice.id)}
+                />
               );
             })}
           </div>
