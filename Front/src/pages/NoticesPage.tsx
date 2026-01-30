@@ -1,7 +1,7 @@
 // Front/src/pages/NoticesPage.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { AxiosError } from "axios";
-import { getNoticeList } from "../api/NoticeApi";
+import { getFavoriteNotices, getNoticeList, type FavoriteNotice } from "../api/NoticeApi";
 
 import NoticeHeroCarousel from "../components/notices/NoticeHeroCarousel";
 import BookmarkedNoticeSection from "../components/notices/FavoritesNoticeSection";
@@ -71,11 +71,42 @@ export default function NoticesPage() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [favorites, setFavorites] = useState<Notice[]>([]);
 
+  const [favoritesVersion, setFavoritesVersion] = useState(0);
+
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
   const pageSize = 10;
+
+  const mapFavoriteToNotice = (f: FavoriteNotice): Notice => ({
+    id: f.id,
+    noticeNo: f.no ?? null,
+    title: f.title ?? "",
+    category: f.category ?? null,
+    regDate: f.reg_date ?? null,
+    status: f.status ?? null,
+    startDate: f.start_date ?? null,
+    endDate: f.end_date ?? null,
+    pdfUrl: f.pdf ?? null,
+    url: f.url ?? null,
+  });
+
+  const loadFavorites = useCallback(
+    async (ignore?: boolean): Promise<void> => {
+      try {
+        const favList = await getFavoriteNotices();
+        if (ignore) return;
+        setFavorites((favList ?? []).map(mapFavoriteToNotice));
+        setFavoritesVersion((v) => v + 1);
+      } catch {
+        if (ignore) return;
+        setFavorites([]);
+        setFavoritesVersion((v) => v + 1);
+      }
+    },
+    []
+  );
 
   // 목록 로딩
   useEffect(() => {
@@ -90,7 +121,7 @@ export default function NoticesPage() {
         if (ignore) return;
 
         setNotices(list ?? []);
-        setFavorites([]); // 임시
+        await loadFavorites(ignore);
       } catch (err) {
         if (ignore) return;
 
@@ -110,7 +141,7 @@ export default function NoticesPage() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [loadFavorites]);
 
   // 필터 변경 시 1페이지로
   useEffect(() => {
@@ -175,7 +206,7 @@ export default function NoticesPage() {
     <div className="mx-auto max-w-5xl px-4 md:px-8 py-8 space-y-10">
       <NoticeHeroCarousel items={featured} />
 
-      <BookmarkedNoticeSection items={favorites} />
+      <BookmarkedNoticeSection items={favorites} onChangedFavorites={loadFavorites} />
 
       <NoticeFilterBar value={filters} onChange={setFilters} />
 
@@ -184,6 +215,8 @@ export default function NoticesPage() {
         items={paged}
         loading={loading}
         errorMessage={errorMessage}
+        onChangedFavorites={loadFavorites}
+        favoritesVersion={favoritesVersion}
       />
 
       <Pagination page={page} totalPages={totalPages} onChangePage={setPage} />
