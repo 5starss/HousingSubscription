@@ -47,15 +47,15 @@ type SortKey = "LATEST" | "DEADLINE" | "POPULAR";
 
 type Filters = {
   keyword: string;
-  category: string; // "ALL" | NoticeCategory
-  status: string; // "ALL" | NoticeStatus
+  category: string[];
+  status: string[];
   sort: SortKey;
 };
 
 const DEFAULT_FILTERS: Filters = {
   keyword: "",
-  category: "ALL",
-  status: "ALL",
+  category: [],
+  status: [],
   sort: "LATEST",
 };
 
@@ -143,10 +143,20 @@ export default function NoticesPage() {
     };
   }, [loadFavorites]);
 
+  const categoryKey = useMemo(
+    () => JSON.stringify(filters.category),
+    [filters.category]
+  );
+
+  const statusKey = useMemo(
+    () => JSON.stringify(filters.status),
+    [filters.status]
+  );
+
   // 필터 변경 시 1페이지로
   useEffect(() => {
     setPage(1);
-  }, [filters.keyword, filters.category, filters.status, filters.sort]);
+  }, [filters.keyword, categoryKey, statusKey, filters.sort]);
 
   // 1) FE 필터링
   const filtered = useMemo(() => {
@@ -157,9 +167,12 @@ export default function NoticesPage() {
         keyword.length === 0 || (n.title ?? "").toLowerCase().includes(keyword);
 
       const matchCategory =
-        filters.category === "ALL" || n.category === filters.category;
+        filters.category.length === 0 ||
+        (n.category != null && filters.category.includes(n.category));
 
-      const matchStatus = filters.status === "ALL" || n.status === filters.status;
+      const matchStatus =
+        filters.status.length === 0 ||
+        (n.status != null && filters.status.includes(n.status));
 
       return matchKeyword && matchCategory && matchStatus;
     });

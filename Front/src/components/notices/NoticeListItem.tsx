@@ -1,4 +1,4 @@
-// Front\src\components\notices\NoticeListItem.tsx
+// Front\src\components\notices\NoticeListItem.tsx => 개별 공고
 import { useMemo } from "react";
 import type { Notice } from "../../pages/NoticesPage";
 import { categoryLabel, statusLabel } from "../../utils/noticeFormat";
