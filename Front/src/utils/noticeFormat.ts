@@ -45,7 +45,7 @@ export function categoryLabel(category: string | null | undefined) {
 }
 
 /**
- * 공고 상태
+ * 공고 상태 (Back 기준)
  */
 export function statusLabel(status: string | null | undefined) {
   switch (status) {
@@ -57,6 +57,28 @@ export function statusLabel(status: string | null | undefined) {
       return "접수마감";
     case "TO_BE_ANNOUNCED":
       return "발표예정";
+    default:
+      return "-";
+  }
+}
+
+
+
+/**
+ * 공고 상태 (Front 기준)
+ */
+import type { ComputedNoticeStatus } from "./noticeStatus";
+
+export function noticeStatusLabel(status: ComputedNoticeStatus | null) {
+  switch (status) {
+    case "UPCOMING":
+      return "청약 예정";
+    case "RECRUITING":
+      return "청약 접수중";
+    case "DEADLINE_SOON":
+      return "마감 임박";
+    case "CLOSED":
+      return "청약 마감";
     default:
       return "-";
   }
