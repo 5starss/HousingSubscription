@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Notice } from "./NoticesPage";
 import { getNoticeDetail } from "../api/NoticeApi";
 
+import NoticeDetailHeader from "../components/noticeDetail/NoticeDetailHeader";
 import NoticeOverviewCard from "../components/noticeDetail/NoticeOverviewCard";
 import NoticeQuickLinksCard from "../components/noticeDetail/NoticeQuickLinksCard";
 import NoticeChatbotPanel from "../components/noticeDetail/NoticeChatbotPanel";
@@ -10,7 +11,7 @@ import NoticeChatbotPanel from "../components/noticeDetail/NoticeChatbotPanel";
 import { computeNoticeStatus } from "../utils/noticeStatus";
 import { noticeStatusLabel } from "../utils/noticeFormat";
 
-// D-Day 문자열 및 남은 일수 계산
+// D-Day 계산 유틸
 function getDDayInfo(endDate: string | null) {
   if (!endDate) return { text: null, days: null };
   const end = new Date(endDate);
@@ -25,7 +26,7 @@ function getDDayInfo(endDate: string | null) {
 
   if (diffDays > 0) return { text: `D-${diffDays}`, days: diffDays };
   if (diffDays === 0) return { text: "D-DAY", days: 0 };
-  return { text: null, days: null }; // 이미 지남
+  return { text: null, days: null };
 }
 
 export default function NoticeDetailPage() {
@@ -49,7 +50,7 @@ export default function NoticeDetailPage() {
   // 상태 텍스트
   const statusText = noticeStatusLabel(computedStatus);
 
-  // D-Day 정보
+  // D-Day 정보 계산
   const { text: dDayText, days: dDayDays } = useMemo(
     () => (notice ? getDDayInfo(notice.endDate) : { text: null, days: null }),
     [notice]
@@ -61,7 +62,7 @@ export default function NoticeDetailPage() {
       case "DEADLINE_SOON":
         return "bg-red-50 text-red-500 border border-red-100";
       case "RECRUITING":
-        return "bg-primary/10 text-primary border border-primary/20";
+        return "bg-primary/10 text-primary border border-primary/20"; // ★ Primary(#00E676) 적용
       case "UPCOMING":
         return "bg-gray-100 text-gray-500 border border-gray-200";
       case "CLOSED":
@@ -74,16 +75,11 @@ export default function NoticeDetailPage() {
   // 기본 정보 카드용 텍스트 색상
   const overviewTextColor = useMemo(() => {
     switch (computedStatus) {
-      case "DEADLINE_SOON":
-        return "text-[#FF5A5A]"; // 빨강
-      case "RECRUITING":
-        return "text-primary";   // 연두
-      case "UPCOMING":
-        return "text-[#8B95A1]"; // 회색
-      case "CLOSED":
-        return "text-gray-400";
-      default:
-        return "text-gray-400";
+      case "DEADLINE_SOON": return "text-[#FF5A5A]";
+      case "RECRUITING": return "text-primary";
+      case "UPCOMING": return "text-[#8B95A1]";
+      case "CLOSED": return "text-gray-400";
+      default: return "text-gray-400";
     }
   }, [computedStatus]);
 
@@ -105,9 +101,7 @@ export default function NoticeDetailPage() {
         if (!ignore) setLoading(false);
       }
     })();
-    return () => {
-      ignore = true;
-    };
+    return () => { ignore = true; };
   }, [noticeId, parsedId]);
 
   const onBack = () => navigate("/notices");
@@ -145,51 +139,23 @@ export default function NoticeDetailPage() {
         </button>
       </div>
 
-      {/* 헤더 영역 */}
+      {/* 헤더 컴포넌트 재사용 */}
       <div className="mb-8 border-b border-gray-100 pb-8">
-        {loading ? (
-          <div className="animate-pulse space-y-4">
-            <div className="h-6 w-24 rounded bg-gray-200" />
-            <div className="h-8 w-3/4 rounded bg-gray-200" />
-          </div>
-        ) : (
-          <div>
-            {/* 뱃지 라인 */}
-            <div className="flex items-center gap-2 mb-3">
-              {/* 상태 뱃지 */}
-              <span className={`px-2.5 py-1 text-xs font-bold rounded-md ${headerBadgeStyle}`}>
-                {statusText}
-              </span>
-
-              {/* D-Day */}
-              {computedStatus !== "CLOSED" && dDayText && (
-                <span className={`text-sm font-bold ${dDayDays !== null && dDayDays <= 3 ? "text-red-500" : "text-gray-500"}`}>
-                  {dDayText}
-                </span>
-              )}
-            </div>
-
-            {/* 타이틀 & 공유 버튼 */}
-            <div className="flex items-start justify-between gap-4">
-              <h1 className="text-2xl font-bold leading-snug text-gray-900 sm:text-3xl">
-                {notice?.title}
-              </h1>
-              <button
-                onClick={onShare}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                title="공유하기"
-              >
-                <span className="material-symbols-outlined text-[22px]">share</span>
-              </button>
-            </div>
-
-            {/* 기간 표시 */}
-            <div className="mt-3 flex items-center gap-2 text-sm text-gray-500 font-medium">
-              <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-              {notice?.startDate} ~ {notice?.endDate}
-            </div>
-          </div>
-        )}
+        <NoticeDetailHeader
+          noticeId={notice?.id ?? null}
+          loading={loading}
+          title={notice?.title ?? ""}
+          startDate={notice?.startDate ?? ""}
+          endDate={notice?.endDate ?? ""}
+          
+          // 계산된 스타일과 텍스트 전달
+          statusText={statusText}
+          badgeStyle={headerBadgeStyle}
+          dDayText={dDayText}
+          isUrgent={dDayDays !== null && dDayDays <= 3} // 3일 이하 남았으면 D-Day 빨간색
+          
+          onShare={onShare}
+        />
       </div>
 
       {/* 레이아웃 */}
@@ -200,8 +166,8 @@ export default function NoticeDetailPage() {
           <NoticeOverviewCard 
             loading={loading} 
             notice={notice} 
-            statusText={statusText} 
-            textColor={overviewTextColor}
+            statusText={statusText}        // 상태 텍스트
+            textColor={overviewTextColor}  // 글자 색상
           />
 
           <NoticeQuickLinksCard
