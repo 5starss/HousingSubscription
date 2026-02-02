@@ -1,5 +1,8 @@
-import { categoryLabel, statusLabel } from "../../../utils/noticeFormat";
+// Front\src\components\notices\favorites\FavoritesNoticeCard.tsx
+import { noticeStatusLabel } from "../../../utils/noticeFormat";
+import { computeNoticeStatus, type ComputedNoticeStatus } from "../../../utils/noticeStatus";
 import type { Notice } from "../../../pages/NoticesPage";
+import CategoryBadge from "../../../components/common/CategoryBadge";
 
 type Props = {
   notice: Notice;
@@ -8,12 +11,49 @@ type Props = {
   onUnfavorite: () => void;
 };
 
+function fallbackComputedStatusFromBackend(
+  backendStatus: string | null | undefined
+): ComputedNoticeStatus {
+  switch (backendStatus) {
+    case "TO_BE_ANNOUNCED":
+      return "UPCOMING";
+    case "RECEIVING":
+      return "RECRUITING";
+    case "DEADLINE_APPROACHING":
+      return "DEADLINE_SOON";
+    case "COMPLETED":
+      return "CLOSED";
+    default:
+      return "UPCOMING";
+  }
+}
+
+function statusToneByComputed(status: ComputedNoticeStatus) {
+  switch (status) {
+    case "DEADLINE_SOON":
+      return "text-red-500";
+    case "RECRUITING":
+      return "text-green-600";
+    case "UPCOMING":
+      return "text-gray-600";
+    case "CLOSED":
+      return "text-gray-500";
+  }
+}
+
 export default function FavoritesNoticeCard({
   notice,
   isPending,
   onClick,
   onUnfavorite,
 }: Props) {
+  const computedStatus =
+    computeNoticeStatus(notice.startDate, notice.endDate) ??
+    fallbackComputedStatusFromBackend(notice.status);
+
+  const statusText = noticeStatusLabel(computedStatus);
+  const statusClass = statusToneByComputed(computedStatus);
+
   return (
     <div
       data-fav-card
@@ -26,9 +66,7 @@ export default function FavoritesNoticeCard({
         min-w-[260px]
       "
     >
-      <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-        {categoryLabel(notice.category)}
-      </span>
+      <CategoryBadge category={notice.category} size="md" />
 
       <button
         type="button"
@@ -48,9 +86,7 @@ export default function FavoritesNoticeCard({
       </h3>
 
       <div className="mt-6 flex items-center justify-between">
-        <span className="text-sm font-medium text-green-600">
-          {statusLabel(notice.status)}
-        </span>
+        <span className={`text-sm font-medium ${statusClass}`}>{statusText}</span>
         <span className="text-gray-300">→</span>
       </div>
     </div>

@@ -1,7 +1,9 @@
 // Front\src\components\notices\list\NoticeListItem.tsx => 개별 공고
 import { useMemo } from "react";
 import type { Notice } from "../../../pages/NoticesPage";
-import { categoryLabel, statusLabel } from "../../../utils/noticeFormat";
+import { noticeStatusLabel, statusLabel } from "../../../utils/noticeFormat";
+import { computeNoticeStatus } from "../../../utils/noticeStatus";
+import CategoryBadge from "../../../components/common/CategoryBadge";
 
 type Props = {
   notice: Notice;
@@ -17,6 +19,7 @@ function formatDateRange(start: string | null, end: string | null) {
   return `${s} - ${e}`;
 }
 
+// D-Day 로직은 "그대로 유지"
 function calcDDay(endDate: string | null) {
   if (!endDate) return null;
   const end = new Date(endDate);
@@ -34,6 +37,7 @@ function calcDDay(endDate: string | null) {
   return null;
 }
 
+// D-Day 로직은 "그대로 유지"
 function getDDayInfo(endDate: string | null) {
   if (!endDate) return { text: null as string | null, daysLeft: null as number | null };
 
@@ -63,31 +67,17 @@ function rightTone() {
   return "text-primary";
 }
 
-function isClosedNotice(n: Notice) {
-  if (n.endDate) {
-    const end = new Date(n.endDate);
-    if (!Number.isNaN(end.getTime())) {
-      const now = new Date();
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const startOfEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-
-      if (startOfEnd.getTime() >= startOfToday.getTime()) return false;
-      return true;
-    }
-  }
-
-  const label = statusLabel(n.status);
-  const normalized = String(label).replace(/\s+/g, "");
-  return normalized.includes("마감") || normalized.includes("종료");
-}
-
 function statusTone(statusText: string, isClosed: boolean) {
   if (isClosed) return "text-gray-400";
+
   const normalized = statusText.replace(/\s+/g, "");
-  if (normalized.includes("접수중") || normalized.includes("모집중")) return "text-[#F97316]";
-  if (normalized.includes("마감") || normalized.includes("종료") || normalized.includes("완료"))
-    return "text-gray-400";
+
+  // 날짜 기반 상태 문구 기준으로 톤 결정
+  if (normalized.includes("마감") && normalized.includes("임박")) return "text-red-500";
+  if (normalized.includes("접수중")) return "text-primary";
   if (normalized.includes("예정")) return "text-[#8B95A1]";
+  if (normalized.includes("마감")) return "text-gray-400";
+
   return "text-[#8B95A1]";
 }
 
@@ -98,15 +88,36 @@ export default function NoticeListItem({
   onOpen,
   onToggleFavorite,
 }: Props) {
-  const statusText = useMemo(() => String(statusLabel(n.status)), [n.status]);
+  // 1) 날짜 기반 상태 계산 (startDate/endDate 기준)
+  const computedStatus = useMemo(
+    () => computeNoticeStatus(n.startDate, n.endDate),
+    [n.startDate, n.endDate]
+  );
 
+  // 2) 좌측 상태 텍스트는 날짜 기반을 우선 사용
+  //    (start/end가 없거나 파싱 실패면 기존 DB statusLabel로 fallback)
+  const statusText = useMemo(() => {
+    const fromDates = noticeStatusLabel(computedStatus);
+    if (fromDates !== "-") return String(fromDates);
+    return String(statusLabel(n.status));
+  }, [computedStatus, n.status]);
+
+  // 3) 마감 여부도 날짜 기반으로만 판단
+  const isClosed = useMemo(() => computedStatus === "CLOSED", [computedStatus]);
+
+  // 4) D-Day는 기존 로직 그대로 (endDate 기준)
   const dday = useMemo(() => calcDDay(n.endDate), [n.endDate]);
-  const rightText = dday ?? statusLabel(n.status);
-
   const { text: ddayText, daysLeft } = useMemo(() => getDDayInfo(n.endDate), [n.endDate]);
-  const isClosed = useMemo(() => isClosedNotice(n), [n]);
 
-  const rightTextClass = isClosed ? "text-gray-400" : ddayText ? ddayTone(daysLeft) : rightTone();
+  // 5) 우측 텍스트는 "기존처럼" D-Day 우선, 없으면 상태 표시
+  const rightText = dday ?? statusText;
+
+  const rightTextClass = isClosed
+    ? "text-gray-400"
+    : ddayText
+      ? ddayTone(daysLeft)
+      : rightTone();
+
   const leftStatusClass = statusTone(statusText, isClosed);
 
   return (
@@ -114,7 +125,7 @@ export default function NoticeListItem({
       onClick={() => onOpen(n.id)}
       className={[
         "group relative",
-        "grid grid-cols-[84px_1fr_92px_64px] items-center",
+        "grid grid-cols-[95px_1fr_92px_64px] items-center",
         "px-6 py-5 bg-white",
         "transition-colors duration-150 hover:bg-primary/8",
         "cursor-pointer",
@@ -130,9 +141,7 @@ export default function NoticeListItem({
       {/* 2열: 공고 본문 (카테고리뱃지 / 공고명 / 모집기간) */}
       <div className="min-w-0 px-4">
         <div className="mb-2 flex items-center gap-2">
-          <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary px-3 py-1 text-[11px] font-bold leading-none">
-            {categoryLabel(n.category)}
-          </span>
+          <CategoryBadge category={n.category} size="sm" className="shrink-0" />
         </div>
 
         <h4 className="truncate text-[15px] font-bold text-[#191F28] tracking-tight mb-2">
@@ -147,7 +156,7 @@ export default function NoticeListItem({
 
       {/* 3열: D-day */}
       <div className="flex justify-center px-2">
-        <span className={`text-[15px] tracking-tight whitespace-nowrap ${rightTextClass}`}>
+        <span className={`text-[15px] font-bold tracking-tight whitespace-nowrap ${rightTextClass}`}>
           {rightText}
         </span>
       </div>

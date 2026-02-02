@@ -4,22 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { getNoticeList } from "../../api/NoticeApi";
 import type { Notice } from "../../pages/NoticesPage";
-import { categoryLabel } from "../../utils/noticeFormat";
-
-type UiStatus = "진행중" | "종료";
-
-function StatusBadge({ status }: { status: UiStatus }) {
-  const cls =
-    status === "진행중"
-      ? "bg-primary/10 text-primary"
-      : "bg-gray-100 text-gray-400";
-
-  return (
-    <span className={`px-3 py-1 rounded-full ${cls} text-[10px] font-bold`}>
-      {status}
-    </span>
-  );
-}
+import CategoryBadge from "../common/CategoryBadge";
 
 function formatPeriod(start: string | null, end: string | null) {
   const s = start ?? "-";
@@ -27,44 +12,38 @@ function formatPeriod(start: string | null, end: string | null) {
   return `${s} ~ ${e}`;
 }
 
-/**
- * 홈 캐러셀 기준 "종료" 판정
- * - status가 COMPLETED면 종료
- * - endDate가 오늘(00:00)보다 과거면 종료
- */
-function calcUiStatus(n: Notice): UiStatus {
-  if (n.status === "COMPLETED") return "종료";
+function getDDayInfo(endDate: string | null) {
+  if (!endDate) return null;
 
-  if (n.endDate) {
-    const end = new Date(n.endDate);
-    if (!Number.isNaN(end.getTime())) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      end.setHours(0, 0, 0, 0);
-      if (end < today) return "종료";
-    }
-  }
+  const end = new Date(endDate);
+  if (Number.isNaN(end.getTime())) return null;
 
-  return "진행중";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.floor(
+    (end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffDays < 0) return null;
+  if (diffDays === 0) return { text: "D-DAY", daysLeft: 0 };
+  return { text: `D-${diffDays}`, daysLeft: diffDays };
 }
 
-function badgeClassByCategory(category: string | null | undefined) {
-  switch (category) {
-    case "YOUTH_RESIDENCE":
-      return "bg-primary/10 text-primary";
-    case "HAPPY_HOUSE":
-      return "bg-emerald-500/10 text-emerald-600";
-    case "NATIONAL_RENTAL":
-      return "bg-blue-500/10 text-blue-600";
-    case "PUBLIC_RENTAL":
-      return "bg-indigo-500/10 text-indigo-600";
-    case "LONG_TERM_RENTAL":
-      return "bg-purple-500/10 text-purple-600";
-    case "SALE_HOUSE":
-      return "bg-amber-500/10 text-amber-700";
-    default:
-      return "bg-gray-100 text-gray-500";
+function DDayText({ endDate }: { endDate: string | null }) {
+  const info = getDDayInfo(endDate);
+  if (!info) return null;
+
+  let tone = "text-gray-500";
+
+  if (info.daysLeft <= 3) {
+    tone = "text-red-600";
+  } else if (info.daysLeft <= 7) {
+    tone = "text-primary";
   }
+
+  return <span className={`text-xs font-bold ${tone}`}>{info.text}</span>;
 }
 
 function SkeletonCard() {
@@ -72,7 +51,7 @@ function SkeletonCard() {
     <div className="glass p-6 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm">
       <div className="flex justify-between items-start mb-4">
         <div className="h-6 w-24 rounded-full bg-gray-100 animate-pulse" />
-        <div className="h-6 w-16 rounded-full bg-gray-100 animate-pulse" />
+        <div className="h-4 w-12 rounded bg-gray-100 animate-pulse" />
       </div>
       <div className="h-6 w-4/5 rounded bg-gray-100 animate-pulse mb-3" />
       <div className="h-6 w-3/5 rounded bg-gray-100 animate-pulse mb-6" />
@@ -114,7 +93,6 @@ function useColumnsByBreakpoint() {
   return cols;
 }
 
-
 export default function NoticeCarousel() {
   const navigate = useNavigate();
 
@@ -152,19 +130,18 @@ export default function NoticeCarousel() {
   }, []);
 
   const latest = useMemo(() => {
-    // 1) 종료 공고 제외
-    const openOnly = items.filter((n) => calcUiStatus(n) !== "종료");
+    // 1) 마감 공고 제외 (D-Day 계산이 null이면 마감/종료로 간주)
+    const openOnly = items.filter((n) => getDDayInfo(n.endDate) !== null);
 
     // 2) 마감 임박순 정렬 (endDate가 가까운 순)
     const sorted = [...openOnly].sort((a, b) => {
-      const aEnd = a.endDate
-        ? new Date(a.endDate).getTime()
-        : Number.POSITIVE_INFINITY;
-      const bEnd = b.endDate
-        ? new Date(b.endDate).getTime()
-        : Number.POSITIVE_INFINITY;
+      const aInfo = getDDayInfo(a.endDate);
+      const bInfo = getDDayInfo(b.endDate);
 
-      if (aEnd !== bEnd) return aEnd - bEnd;
+      const aLeft = aInfo ? aInfo.daysLeft : Number.POSITIVE_INFINITY;
+      const bLeft = bInfo ? bInfo.daysLeft : Number.POSITIVE_INFINITY;
+
+      if (aLeft !== bLeft) return aLeft - bLeft;
 
       const aReg = a.regDate ? new Date(a.regDate).getTime() : 0;
       const bReg = b.regDate ? new Date(b.regDate).getTime() : 0;
@@ -243,61 +220,42 @@ export default function NoticeCarousel() {
             </div>
           </div>
         ) : (
-          latest.map((item) => {
-            const uiStatus = calcUiStatus(item);
-            const isDisabled = uiStatus === "종료";
+          latest.map((item) => (
+            <div
+              key={item.id}
+              className="glass p-6 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-xl transition-all group flex flex-col"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <CategoryBadge category={item.category} size="sm" />
+                <DDayText endDate={item.endDate} />
+              </div>
 
-            return (
-              <div
-                key={item.id}
-                className="glass p-6 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-xl transition-all group flex flex-col"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <span
-                    className={`px-3 py-1 rounded-full ${badgeClassByCategory(
-                      item.category
-                    )} text-[10px] font-bold uppercase`}
-                  >
-                    {categoryLabel(item.category)}
-                  </span>
-                  <StatusBadge status={uiStatus} />
-                </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold mb-4 line-clamp-2">
+                  {item.title}
+                </h3>
 
-                {/* 본문은 늘어나도 OK */}
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold mb-4 line-clamp-2">
-                    {item.title}
-                  </h3>
-
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span className="material-symbols-outlined text-sm">
-                        calendar_month
-                      </span>
-                      <span>{formatPeriod(item.startDate, item.endDate)}</span>
-                    </div>
+                <div className="space-y-2 mb-6">
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <span className="material-symbols-outlined text-sm">
+                      calendar_month
+                    </span>
+                    <span>{formatPeriod(item.startDate, item.endDate)}</span>
                   </div>
                 </div>
-
-                {/* 버튼 하단 고정 */}
-                <div className="mt-auto">
-                  {isDisabled ? (
-                    <button className="w-full py-3 bg-gray-50 dark:bg-white/5 rounded-xl text-sm font-bold opacity-50 cursor-not-allowed">
-                      공고 종료
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => goDetail(item.id)}
-                      className="cursor-pointer w-full py-3 bg-gray-50 dark:bg-white/5 rounded-xl text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all"
-                    >
-                      공고 상세보기
-                    </button>
-                  )}
-                </div>
               </div>
-            );
-          })
+
+              <div className="mt-auto">
+                <button
+                  type="button"
+                  onClick={() => goDetail(item.id)}
+                  className="cursor-pointer w-full py-3 bg-gray-50 dark:bg-white/5 rounded-xl text-sm font-bold group-hover:bg-primary group-hover:text-white transition-all"
+                >
+                  공고 상세보기
+                </button>
+              </div>
+            </div>
+          ))
         )}
       </div>
     </section>
