@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { Notice } from "../../../pages/NoticesPage";
-import { categoryLabel, statusLabel } from "../../../utils/noticeFormat";
+import { categoryLabel } from "../../../utils/noticeFormat";
+import { getNoticeComputedStatusText } from "../../../utils/noticeComputedText";
 
 type NoticeHeroCarouselProps = {
   items: Notice[];
@@ -20,11 +21,7 @@ export default function NoticeHeroCarousel({
   const navigate = useNavigate();
 
   const slides = useMemo(() => {
-    const base = items ?? [];
-    const receiving = base.filter((n) => n.status === "RECEIVING");
-
-    receiving.sort((a, b) => (b.regDate ?? "").localeCompare(a.regDate ?? ""));
-    return receiving.slice(0, 5);
+    return (items ?? []).slice(0, 5);
   }, [items]);
 
   const count = slides.length;
@@ -112,7 +109,7 @@ export default function NoticeHeroCarousel({
         <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold">
           <span>
             {categoryLabel(current.category ?? undefined)} |{" "}
-            {statusLabel(current.status ?? undefined)}
+            {getNoticeComputedStatusText(current)}
           </span>
         </div>
 
