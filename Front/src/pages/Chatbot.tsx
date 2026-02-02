@@ -3,46 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import type { ChatMessage } from "../data/chat";
 
-import type { AxiosError } from "axios";
-
 import ChatComposer from "../components/chatbot/ChatComposer";
 import ChatMessageList from "../components/chatbot/ChatMessageList";
 
-import { apiClient } from "../api/axiosConfig";
-
-type ChatbotSuccessResponse = {
-  message: string;
-};
-
-async function postChat(message: string): Promise<string> {
-  const res = await apiClient.post<ChatbotSuccessResponse>("/chatbot/chat", {
-    message,
-  });
-  return res.data.message;
-}
-
-function toErrorText(err: unknown): string {
-  if (err && typeof err === "object" && "isAxiosError" in err) {
-    const axiosErr = err as AxiosError<{
-      code?: string;
-      message?: string;
-    }>;
-
-    const status = axiosErr.response?.status;
-    const data = axiosErr.response?.data;
-
-    if (data?.message) {
-      const code = data.code ? ` (${data.code})` : "";
-      return `${data.message}${code}`;
-    }
-
-    if (status) {
-      return `요청 처리 중 오류가 발생했습니다. (HTTP ${status})`;
-    }
-  }
-
-  return "요청 처리 중 오류가 발생했습니다.";
-}
+import { postChat, toChatbotErrorText } from "../api/ChatbotApi";
 
 export default function Chatbot() {
   const location = useLocation();
@@ -56,7 +20,7 @@ export default function Chatbot() {
     const d = new Date();
     const m = d.getMonth() + 1;
     const day = d.getDate();
-    return `오늘, ${m}월 ${day}일`;
+    return `${m}월 ${day}일`;
   }, []);
 
   useEffect(() => {
@@ -102,7 +66,7 @@ export default function Chatbot() {
 
         setMessages((prev) => [...prev, assistantMessage]);
       } catch (e) {
-        const msg = toErrorText(e);
+        const msg = toChatbotErrorText(e);
         setErrorText(msg);
 
         const assistantErrorMessage: ChatMessage = {
