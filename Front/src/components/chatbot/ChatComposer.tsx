@@ -1,10 +1,10 @@
 // Front/src/components/chatbot/ChatComposer.tsx
 // Quick Action 버튼 & 채팅 입력 영역
 
-type QuickAction = {
-  icon: string;
-  label: string;
-};
+// type QuickAction = {
+//   icon: string;
+//   label: string;
+// };
 
 type ChatComposerProps = {
   input: string;
@@ -14,26 +14,26 @@ type ChatComposerProps = {
   onQuickAction: (label: string) => void;
 };
 
-const QUICK_ACTIONS: QuickAction[] = [
-  { icon: "campaign", label: "최근 공고" },
-  { icon: "check_circle", label: "자격 요건" },
-  { icon: "description", label: "신청 방법" },
-  { icon: "calculate", label: "임대료 계산" },
-];
+// const QUICK_ACTIONS: QuickAction[] = [
+//   { icon: "campaign", label: "최근 공고" },
+//   { icon: "check_circle", label: "자격 요건" },
+//   { icon: "description", label: "신청 방법" },
+//   { icon: "calculate", label: "임대료 계산" },
+// ];
 
 export default function ChatComposer({
   input,
   isSending,
   onInputChange,
   onSend,
-  onQuickAction,
+  // onQuickAction,
 }: ChatComposerProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-gray-50 pb-6">
       <div className="mx-auto max-w-4xl px-4 md:px-6">
         <div className="rounded-2xl bg-white shadow-lg border border-black/5 px-4 py-4">
           {/* Quick actions */}
-          <div className="flex gap-2 overflow-x-auto pb-3">
+          {/* <div className="flex gap-2 overflow-x-auto pb-3">
             {QUICK_ACTIONS.map(item => (
               <button
                 key={item.label}
@@ -53,7 +53,7 @@ export default function ChatComposer({
                 {item.label}
               </button>
             ))}
-          </div>
+          </div> */}
 
           {/* Input row */}
           <div className="flex items-center gap-3">
