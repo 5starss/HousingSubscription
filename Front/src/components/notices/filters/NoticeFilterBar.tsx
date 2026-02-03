@@ -1,5 +1,5 @@
 // Front/src/components/notices/filters/NoticeFilterBar.tsx
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   categoryLabel,
   noticeStatusLabel,
@@ -58,6 +58,9 @@ function MaterialIcon({
   );
 }
 
+// 필터에서 제외할 카테고리(주택유형)
+const EXCLUDED_CATEGORIES = new Set<string>(["SALE_HOUSE"]);
+
 export default function NoticeFilterBar({
   value,
   onChange,
@@ -71,6 +74,17 @@ export default function NoticeFilterBar({
   const [expanded, setExpanded] = useState(() => defaultExpanded);
   const [localKeyword, setLocalKeyword] = useState(value.keyword);
 
+  // 만약 외부에서든 내부에서든 SALE_HOUSE가 들어와 있으면 제거(보이지 않는 선택값 방지)
+  useEffect(() => {
+    if (!value.category?.some((c) => EXCLUDED_CATEGORIES.has(c))) return;
+
+    const nextCategory = (value.category ?? []).filter(
+      (c) => !EXCLUDED_CATEGORIES.has(c)
+    );
+    onChange({ ...value, category: nextCategory });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value.category]);
+
   const defaultCategoryOptions = useMemo<Option[]>(() => {
     const categories: NoticeCategory[] = [
       "YOUTH_RESIDENCE",
@@ -78,12 +92,13 @@ export default function NoticeFilterBar({
       "NATIONAL_RENTAL",
       "PUBLIC_RENTAL",
       "LONG_TERM_RENTAL",
-      "SALE_HOUSE",
     ];
-    return categories.map((c) => ({ value: c, label: categoryLabel(c) }));
+    return categories
+      .filter((c) => !EXCLUDED_CATEGORIES.has(String(c)))
+      .map((c) => ({ value: c, label: categoryLabel(c) }));
   }, []);
 
-  // 진행상태는 DB status가 아니라 날짜 기반 computed 상태로 고정
+  // 진행상태는 날짜 기반 computed 상태로 고정
   const defaultStatusOptions = useMemo<Option[]>(() => {
     const statuses: ComputedNoticeStatus[] = [
       "UPCOMING",
@@ -94,7 +109,12 @@ export default function NoticeFilterBar({
     return statuses.map((s) => ({ value: s, label: noticeStatusLabel(s) }));
   }, []);
 
-  const categories = categoryOptions ?? defaultCategoryOptions;
+  // 외부에서 categoryOptions를 주더라도, 필터에서 제외 대상은 한번 더 걸러줌
+  const categories = useMemo<Option[]>(() => {
+    const base = categoryOptions ?? defaultCategoryOptions;
+    return base.filter((opt) => !EXCLUDED_CATEGORIES.has(opt.value));
+  }, [categoryOptions, defaultCategoryOptions]);
+
   const statuses = statusOptions ?? defaultStatusOptions;
 
   const commitKeyword = () => {
