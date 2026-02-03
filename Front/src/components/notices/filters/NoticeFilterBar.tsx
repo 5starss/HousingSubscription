@@ -2,10 +2,10 @@
 import { useMemo, useState } from "react";
 import {
   categoryLabel,
-  statusLabel,
+  noticeStatusLabel,
   type NoticeCategory,
-  type NoticeStatus,
 } from "../../../utils/noticeFormat";
+import type { ComputedNoticeStatus } from "../../../utils/noticeStatus";
 
 import NoticeFilterCollapsed from "./NoticeFilterCollapsed";
 import NoticeFilterExpanded from "./NoticeFilterExpanded";
@@ -20,7 +20,7 @@ type SortKey = "LATEST" | "DEADLINE" | "POPULAR";
 export type Filters = {
   keyword: string;
   category: string[];
-  status: string[];
+  status: ComputedNoticeStatus[];
   sort: SortKey;
 };
 
@@ -49,8 +49,7 @@ function MaterialIcon({
     <span
       className={`material-symbols-outlined ${className ?? ""}`}
       style={{
-        fontVariationSettings:
-          "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20",
+        fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20",
       }}
       aria-hidden="true"
     >
@@ -84,14 +83,15 @@ export default function NoticeFilterBar({
     return categories.map((c) => ({ value: c, label: categoryLabel(c) }));
   }, []);
 
+  // 진행상태는 DB status가 아니라 날짜 기반 computed 상태로 고정
   const defaultStatusOptions = useMemo<Option[]>(() => {
-    const statuses: NoticeStatus[] = [
-      "RECEIVING",
-      "DEADLINE_APPROACHING",
-      "COMPLETED",
-      "TO_BE_ANNOUNCED",
+    const statuses: ComputedNoticeStatus[] = [
+      "UPCOMING",
+      "RECRUITING",
+      "DEADLINE_SOON",
+      "CLOSED",
     ];
-    return statuses.map((s) => ({ value: s, label: statusLabel(s) }));
+    return statuses.map((s) => ({ value: s, label: noticeStatusLabel(s) }));
   }, []);
 
   const categories = categoryOptions ?? defaultCategoryOptions;

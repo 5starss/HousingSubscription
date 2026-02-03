@@ -12,7 +12,14 @@ import {
 import NoticeHeroCarousel from "../components/notices/hero/NoticeHeroCarousel";
 import FavoritesNoticeSection from "../components/notices/favorites/FavoritesNoticeSection";
 import Pagination from "../components/notices/Pagination";
-import NoticeListLayout, { type SortType } from "../components/notices/list/NoticeListLayout";
+import NoticeListLayout, {
+  type SortType,
+} from "../components/notices/list/NoticeListLayout";
+
+import {
+  computeNoticeStatus,
+  type ComputedNoticeStatus,
+} from "../utils/noticeStatus";
 
 type NoticeCategory =
   | "YOUTH_RESIDENCE"
@@ -53,7 +60,7 @@ type SortKey = "LATEST" | "DEADLINE" | "POPULAR";
 type Filters = {
   keyword: string;
   category: string[];
-  status: string[];
+  status: ComputedNoticeStatus[];
   sort: SortKey;
 };
 
@@ -94,7 +101,6 @@ function isStarted(startDate: string | null) {
   const startOfStart = new Date(s.getFullYear(), s.getMonth(), s.getDate());
   return startOfStart.getTime() <= startOfToday.getTime();
 }
-
 
 type NoticePresetState = {
   preselectedCategories?: string[];
@@ -235,15 +241,21 @@ export default function NoticesPage() {
     };
   }, [loadFavorites]);
 
-  const categoryKey = useMemo(() => JSON.stringify(filters.category), [filters.category]);
-  const statusKey = useMemo(() => JSON.stringify(filters.status), [filters.status]);
+  const categoryKey = useMemo(
+    () => JSON.stringify(filters.category),
+    [filters.category]
+  );
+  const statusKey = useMemo(
+    () => JSON.stringify(filters.status),
+    [filters.status]
+  );
 
   // 필터/정렬 변경 시 1페이지로
   useEffect(() => {
     setPage(1);
   }, [filters.keyword, categoryKey, statusKey, sortType]);
 
-  // 1) FE 필터링
+  // 1) FE 필터링 (진행상태는 computed로 매칭)
   const filtered = useMemo(() => {
     const keyword = filters.keyword.trim().toLowerCase();
 
@@ -258,7 +270,10 @@ export default function NoticesPage() {
 
       const matchStatus =
         filters.status.length === 0 ||
-        (n.status != null && filters.status.includes(n.status));
+        (() => {
+          const cs = computeNoticeStatus(n.startDate, n.endDate);
+          return cs != null && filters.status.includes(cs);
+        })();
 
       return matchKeyword && matchCategory && matchStatus;
     });
@@ -273,32 +288,25 @@ export default function NoticesPage() {
       return copied;
     }
 
-    // 마감 임박순
+    // 마감 임박순: CLOSED는 무조건 최하단 + 나머지는 마감일 빠른 순
     const today = new Date();
-    const startOfToday = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    ).getTime();
 
     copied.sort((a, b) => {
+      const aStatus = computeNoticeStatus(a.startDate, a.endDate, today);
+      const bStatus = computeNoticeStatus(b.startDate, b.endDate, today);
+
+      const aClosed = aStatus === "CLOSED";
+      const bClosed = bStatus === "CLOSED";
+
+      if (aClosed !== bClosed) return aClosed ? 1 : -1;
+
       const aEnd = toMs(a.endDate);
       const bEnd = toMs(b.endDate);
 
-      const aClosed = aEnd < startOfToday;
-      const bClosed = bEnd < startOfToday;
+      // 둘 다 CLOSED가 아니면 마감일 빠른 순
+      if (!aClosed && !bClosed) return aEnd - bEnd;
 
-      // 1️. 마감 여부 우선 (마감 안 된 것 먼저)
-      if (aClosed !== bClosed) {
-        return aClosed ? 1 : -1;
-      }
-
-      // 2️. 둘 다 마감 안 됐으면 → 마감 빠른 순
-      if (!aClosed && !bClosed) {
-        return aEnd - bEnd;
-      }
-
-      // 3️. 둘 다 마감됐으면 → 최신 마감일 순(선택)
+      // 둘 다 CLOSED면 최신 마감일이 위로(선택)
       return bEnd - aEnd;
     });
 

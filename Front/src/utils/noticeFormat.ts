@@ -1,5 +1,4 @@
-// Front/src/utils/noticeFormat.ts
-
+// Front/src/utils/noticeFormat.ts => 코드값 → 한글 라벨(표시 텍스트) 변환
 export type NoticeCategory =
   | "YOUTH_RESIDENCE"
   | "HAPPY_HOUSE"

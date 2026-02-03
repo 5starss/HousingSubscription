@@ -3,6 +3,7 @@ import NoticeListHeader from "./NoticeListHeader";
 import NoticeFilterBar from "../filters/NoticeFilterBar";
 import NoticeListSection from "./NoticeListSection";
 import type { Notice } from "../../../pages/NoticesPage";
+import type { ComputedNoticeStatus } from "../../../utils/noticeStatus";
 
 export type SortType = "REG_DATE" | "END_DATE";
 
@@ -15,7 +16,7 @@ type Props = {
   filters: {
     keyword: string;
     category: string[];
-    status: string[];
+    status: ComputedNoticeStatus[];
     sort: "LATEST" | "DEADLINE" | "POPULAR";
   };
   onChangeFilters: (next: Props["filters"]) => void;
