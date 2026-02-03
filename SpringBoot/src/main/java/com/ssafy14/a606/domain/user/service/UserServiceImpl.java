@@ -1,5 +1,6 @@
 package com.ssafy14.a606.domain.user.service;
 
+import com.ssafy14.a606.domain.auth.refresh.RefreshTokenStore;
 import com.ssafy14.a606.domain.user.dto.request.SignUpRequestDto;
 import com.ssafy14.a606.domain.user.dto.request.UserUpdateRequestDto;
 import com.ssafy14.a606.domain.user.dto.response.SignUpResponseDto;
@@ -16,7 +17,10 @@ import com.ssafy14.a606.global.exceptions.InvalidValueException;
 import com.ssafy14.a606.global.exceptions.NotFoundException;
 import com.ssafy14.a606.global.security.jwt.JwtTokenProvider;
 import com.ssafy14.a606.global.security.user.CustomUserDetails;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsRepository userDetailsRepository;
+    private final RefreshTokenStore refreshTokenStore;
 
     // 1. 회원가입
     @Override
@@ -155,11 +160,26 @@ public class UserServiceImpl implements UserService {
     // 7. 회원탈퇴
     @Override
     @Transactional
-    public void deleteAccount(Long userId){
+    public void deleteAccount(Long userId, HttpServletResponse response){
 
+        // 1) 사용자 존재 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new NotFoundException("존재하지 않는 사용자입니다."));
 
+        // 2) Redis에서 RT 삭제
+        refreshTokenStore.delete(userId);
+
+        // 3) RT 쿠키 만료
+        ResponseCookie expiredCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)        // 로컬 http면 false, 운영 https면 true
+                .sameSite("None")    // 로컬이면 Lax도 고려, 운영 cross-site면 None
+                .path("/")
+                .maxAge(0)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
+
+        // 4) 회원 삭제
         userRepository.delete(user);
 
     }
