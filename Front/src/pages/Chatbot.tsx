@@ -99,11 +99,7 @@ export default function Chatbot() {
       setInput("");
 
       try {
-        let promptToSend = value;
-        if (chatContext) {
-           promptToSend = `[${chatContext}] ${value}`;
-        }
-        const answer = await postChat(promptToSend);
+        const answer = await postChat(value, chatContext);
 
         const assistantMessage: ChatMessage = {
           id: `chat-${Date.now()}-assistant`,
@@ -195,7 +191,7 @@ export default function Chatbot() {
           id: `sys-${Date.now()}`, 
           role: "assistant", 
           type: "text", 
-          text: `'${label}'에 대해 무엇이든 물어보세요!`, 
+          text: `'${label}'에 대해 어떤 것이 궁금하신가요?`, 
           createdAt: new Date().toISOString() 
         },
       ]);
