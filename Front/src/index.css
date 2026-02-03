@@ -5,11 +5,20 @@
 }
 
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  @supports not (scrollbar-gutter: stable) {
+    html {
+      overflow-y: scroll;
+    }
+  }
+
   body {
     font-family: Pretendard, sans-serif;
   }
 }
-
 
 .glass {
   background: rgba(255, 255, 255, 0.85);
