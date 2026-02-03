@@ -37,3 +37,23 @@ export async function postAdminCreateNotice(
   const res = await apiClient.post("/admin/notices", payload);
   return res.data;
 }
+
+
+export async function patchAdminUpdateNotice(
+  noticeId: number,
+  body: AdminCreateNoticeRequest
+) {
+  const payload = {
+    noticeNo: body.notice_no,
+    title: body.title,
+    category: body.category,
+    status: body.status,
+    regDate: body.reg_date,
+    startDate: body.start_date,
+    endDate: body.end_date,
+    pdfUrl: body.pdf,
+  };
+
+  const res = await apiClient.patch(`/admin/notices/${noticeId}`, payload);
+  return res.data as { id: number };
+}

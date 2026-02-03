@@ -25,6 +25,7 @@ import Chatbot from "../pages/Chatbot";
 
 // 관리자(admin) 페이지
 import NoticeCreatePage from "../pages/Admin/NoticeCreatePage";
+import NoticeUpdatePage from "../pages/Admin/NoticeUpdatePage";
 
 export default function App() {
   return (
@@ -59,6 +60,7 @@ export default function App() {
             
             {/* 관리자 페이지 */}
             <Route path="/admin/notices/create" element={<NoticeCreatePage />} />
+            <Route path="/admin/notices/:noticeId/update" element={<NoticeUpdatePage />} />
           </Route>
 
           {/* 챗봇 페이지: ChatbotLayout 적용 */}
