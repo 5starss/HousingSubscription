@@ -61,7 +61,7 @@ export default function Chatbot() {
   const [chatContext, setChatContext] = useState<string | null>(null);
   const [quickActions, setQuickActions] = useState(ROOT_ACTIONS);
 
-  // ★ [수정] 히스토리 스택: 메시지 상태(messages)까지 함께 저장
+  // 히스토리 스택: 메시지 상태(messages)까지 함께 저장
   const [, setHistoryStack] = useState<{ 
     actions: { label: string; value: string }[]; 
     context: string | null;
