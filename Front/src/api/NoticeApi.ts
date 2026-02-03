@@ -1,6 +1,7 @@
 // Front/src/api/NoticeApi.ts
 import { apiClient } from "./axiosConfig";
 import type { Notice } from "../pages/NoticesPage";
+import type { AxiosError } from "axios";
 
 type NoticeListResponse = {
   notices: Notice[];
@@ -62,9 +63,23 @@ export type FavoriteNotice = {
   url: string;
 };
 
+function isLoggedIn() {
+  return Boolean(localStorage.getItem("accessToken"));
+}
+
 export async function getFavoriteNotices(): Promise<FavoriteNotice[]> {
-  const res = await apiClient.get<FavoriteNotice[]>("/notices/favorites");
-  return res.data ?? [];
+  if (!isLoggedIn()) return []; // 비로그인: 요청 자체를 안 보냄
+
+  try {
+    const res = await apiClient.get<FavoriteNotice[]>("/notices/favorites");
+    return res.data ?? [];
+  } catch (err) {
+    // 토큰 만료/권한 문제(401/403)는 favorites 조회만 조용히 비움
+    const ax = err as AxiosError;
+    const status = ax.response?.status;
+    if (status === 401 || status === 403) return [];
+    throw err;
+  }
 }
 
 /**
