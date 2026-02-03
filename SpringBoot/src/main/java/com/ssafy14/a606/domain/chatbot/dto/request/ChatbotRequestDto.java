@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChatbotRequestDto {
     private String message;
-    private String noticeNo;
+    private String title;
 }

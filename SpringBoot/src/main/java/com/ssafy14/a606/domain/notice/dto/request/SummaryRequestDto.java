@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SummaryRequestDto {
-    private String noticeNo;
+    private String title;
 }
