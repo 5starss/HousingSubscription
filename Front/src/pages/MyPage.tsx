@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getUserBasicInfo, updateUserBasicInfo, getUserAddInfo, updateUserAddInfo } from "../api/UserApi"; // API 연동 시 주석 해제
 import type { UserAddInfo } from "../types/user";
-import { withdrawAccount } from "../api/AuthApi";
+import { withdrawAccount, confirmPasswordAPI } from "../api/AuthApi";
+import WithdrawModal from "../components/modals/WithdrawModal";
 
 // 기본 정보 폼 타입
 interface BasicFormState {
@@ -35,32 +36,41 @@ export default function MyPage() {
     email: ""
   });
 
-  // ★ [수정] 회원탈퇴 핸들러 (기존 로그아웃 대체)
-  const handleWithdraw = async () => {
-    // 1. 실수로 누르는 것을 방지하기 위해 확인 창 띄우기
-    if (
-      !window.confirm(
-        "정말 탈퇴하시겠습니까?\n탈퇴 시 계정 정보와 활동 내역이 모두 삭제되며 복구할 수 없습니다."
-      )
-    ) {
-      return;
-    }
+  // 탈퇴 모달 상태 관리
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [isWithdrawLoading, setIsWithdrawLoading] = useState(false);
 
+  // 탈퇴 버튼 클릭 시 모달 열기
+  const handleWithdrawClick = () => {
+    setIsWithdrawModalOpen(true);
+  };
+
+  // 모달에서 비밀번호 입력 후 "탈퇴하기" 눌렀을 때 실행
+  const handleFinalWithdraw = async (password: string) => {
+    setIsWithdrawLoading(true);
     try {
-      // 2. 탈퇴 API 호출 (/users/me)
+      // 비밀번호 검증 API 호출
+      const isVerified = await confirmPasswordAPI(password);
+      
+      if (!isVerified) {
+        alert("비밀번호가 일치하지 않습니다.");
+        setIsWithdrawLoading(false);
+        return;
+      }
+
+      // 검증 성공 시 실제 탈퇴 API 호출
       await withdrawAccount();
 
-      // 3. 성공 시: 프론트엔드 정리 (토큰 삭제 & 이동)
-      localStorage.removeItem("accessToken");
-      
+      // 성공 처리
+      localStorage.clear();
       alert("회원 탈퇴가 완료되었습니다.\n그동안 이용해 주셔서 감사합니다.");
-      
-      // 로그인 페이지로 이동 (새로고침 효과를 위해 window.location 사용 추천)
-      window.location.href = "/login";
+      window.location.href = "/";
 
     } catch (error) {
-      console.error("탈퇴 실패:", error);
-      alert("탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      console.error("탈퇴 프로세스 실패:", error);
+      alert("탈퇴 처리에 실패했습니다. 다시 시도해주세요."); // 소셜 로그인 유저 등 예외 처리
+    } finally {
+      setIsWithdrawLoading(false);
     }
   };
 
@@ -234,6 +244,13 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-white p-8 flex justify-center">
+      {/* 탈퇴 모달 컴포넌트 */}
+      <WithdrawModal 
+        isOpen={isWithdrawModalOpen}
+        onClose={() => setIsWithdrawModalOpen(false)}
+        onConfirm={handleFinalWithdraw}
+        isLoading={isWithdrawLoading}
+      />
       <div className="max-w-6xl w-full flex gap-8">
         
         {/* [왼쪽 사이드바] */}
@@ -247,7 +264,7 @@ export default function MyPage() {
             </nav>
             <div className="mt-8 border-t border-gray-100 pt-6">
               <button
-                onClick={handleWithdraw}
+                onClick={handleWithdrawClick}
                 className="inline-flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-red-500 transition-colors"
               >
                 <span className="material-symbols-outlined text-[18px]">person_remove</span>
