@@ -81,7 +81,7 @@ async def get_rag_answer(user_question: str, collection, title: str):
         # 2-1. 검색 결과가 없거나 관련성이 낮을 경우: 일반적인 답변 생성
         general_prompt_template = ChatPromptTemplate.from_messages([
             ("system", (
-                "검색된 공고 정보가 없어 질문이 정확하지 않거나 틀린 답변이 나올 수 있습니다. " # Disclaimer prepended
+                "검색된 공고 정보가 없어 질문이 정확하지 않거나 틀린 답변이 나올 수 있습니다. 이 문장은 답변 맨 처음으로 고정" # Disclaimer prepended
                 "당신은 AI 챗봇 '서울집사'입니다. "
                 "사용자의 질문에 대해 당신이 아는 정보를 바탕으로 최대한 친절하고 상세하게 답변해주세요. "
                 "모든 답변은 '순수 평문(Plain Text)'으로만 작성해야 합니다. "
@@ -108,7 +108,7 @@ async def get_rag_answer(user_question: str, collection, title: str):
                 "절대로 '내용'에 없는 정보나 당신의 외부 지식을 사용해서는 안 됩니다. "
                 "주어진 '내용'에 질문에 대한 답이 없다면, '주어진 내용에서는 해당 정보를 찾을 수 없습니다'라고 솔직하게 답변하세요. "
                 "답변은 친절한 전문가의 말투로 설명해주세요. "
-                "답변 마지막에는 정보의 출처인 '{source_folder}'를 명시해주세요. "
+                "답변 마지막에는 정보의 출처인 출처 : '{source_folder}'를 명시해주세요. "
                 "모든 답변은 '순수 평문(Plain Text)'으로만 작성해야 합니다. "
                 "절대로 별표(*), 특수기호(#), 대시(-) 등을 사용한 마크다운 형식을 쓰지 마세요. "
                 "강조가 필요하다면 괄호 [ ] 를 사용하거나 줄바꿈을 활용하세요. "
