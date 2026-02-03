@@ -11,6 +11,7 @@ import com.ssafy14.a606.domain.user.dto.response.UserResponseDto;
 import com.ssafy14.a606.domain.user.service.UserDetailsService;
 import com.ssafy14.a606.domain.user.service.UserService;
 import com.ssafy14.a606.global.security.user.CustomUserDetails;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -81,9 +82,12 @@ public class UserController {
 
     // 회원탈퇴 -> hard delete
     @DeleteMapping("/me")
-    public ResponseEntity<Map<String, String>> deleteMe(@AuthenticationPrincipal CustomUserDetails principal){
+    public ResponseEntity<Map<String, String>> deleteMe(
+            @AuthenticationPrincipal CustomUserDetails principal,
+            HttpServletResponse response
+    ){
         Long userId = principal.getUserId();
-        userService.deleteAccount(userId);
+        userService.deleteAccount(userId, response);
         return ResponseEntity.ok(Map.of("message", "ACCOUNT_DELETE_SUCCESS"));
     }
 
