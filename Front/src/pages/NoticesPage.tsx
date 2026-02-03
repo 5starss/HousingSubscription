@@ -170,6 +170,7 @@ export default function NoticesPage() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [favorites, setFavorites] = useState<Notice[]>([]);
   const [favoritesVersion, setFavoritesVersion] = useState(0);
+  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -190,20 +191,32 @@ export default function NoticesPage() {
     url: f.url ?? null,
   });
 
-  const loadFavorites = useCallback(async (ignore?: boolean): Promise<void> => {
-    try {
-      const favList = await getFavoriteNotices();
-      if (ignore) return;
+  const loadFavorites = useCallback(
+    async (ignore?: boolean): Promise<void> => {
+      // 비로그인: 요청 자체를 안 함 + 상태도 빈값으로 정리
+      if (!isLoggedIn) {
+        if (!ignore) {
+          setFavorites([]);
+          setFavoritesVersion((v) => v + 1);
+        }
+        return;
+      }
 
-      setFavorites((favList ?? []).map(mapFavoriteToNotice));
-      setFavoritesVersion((v) => v + 1);
-    } catch {
-      if (ignore) return;
+      try {
+        const favList = await getFavoriteNotices();
+        if (ignore) return;
 
-      setFavorites([]);
-      setFavoritesVersion((v) => v + 1);
-    }
-  }, []);
+        setFavorites((favList ?? []).map(mapFavoriteToNotice));
+        setFavoritesVersion((v) => v + 1);
+      } catch {
+        if (ignore) return;
+
+        setFavorites([]);
+        setFavoritesVersion((v) => v + 1);
+      }
+    },
+    [isLoggedIn]
+  );
 
   useEffect(() => {
     let ignore = false;
@@ -217,7 +230,7 @@ export default function NoticesPage() {
         if (ignore) return;
 
         setNotices(list ?? []);
-        await loadFavorites(ignore);
+        loadFavorites(ignore);
       } catch (err) {
         if (ignore) return;
 
