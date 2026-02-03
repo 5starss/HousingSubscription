@@ -12,7 +12,14 @@ import {
 import NoticeHeroCarousel from "../components/notices/hero/NoticeHeroCarousel";
 import FavoritesNoticeSection from "../components/notices/favorites/FavoritesNoticeSection";
 import Pagination from "../components/notices/Pagination";
-import NoticeListLayout, { type SortType } from "../components/notices/list/NoticeListLayout";
+import NoticeListLayout, {
+  type SortType,
+} from "../components/notices/list/NoticeListLayout";
+
+import {
+  computeNoticeStatus,
+  type ComputedNoticeStatus,
+} from "../utils/noticeStatus";
 
 type NoticeCategory =
   | "YOUTH_RESIDENCE"
@@ -53,7 +60,7 @@ type SortKey = "LATEST" | "DEADLINE" | "POPULAR";
 type Filters = {
   keyword: string;
   category: string[];
-  status: string[];
+  status: ComputedNoticeStatus[];
   sort: SortKey;
 };
 
@@ -63,6 +70,9 @@ const DEFAULT_FILTERS: Filters = {
   status: [],
   sort: "LATEST",
 };
+
+// 주택유형 필터에서 제외할 카테고리
+const EXCLUDED_CATEGORIES = new Set<string>(["SALE_HOUSE"]);
 
 function toMs(dateStr: string | null) {
   if (!dateStr) return 0;
@@ -81,7 +91,7 @@ function calcDaysLeft(endDate: string | null) {
   const startOfEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate());
 
   const diffMs = startOfEnd.getTime() - startOfToday.getTime();
-  return Math.floor(diffMs / (1000 * 60 * 60 * 24)); // 오늘 0, 내일 1 ...
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
 
 function isStarted(startDate: string | null) {
@@ -95,7 +105,6 @@ function isStarted(startDate: string | null) {
   return startOfStart.getTime() <= startOfToday.getTime();
 }
 
-
 type NoticePresetState = {
   preselectedCategories?: string[];
   scrollToList?: boolean;
@@ -105,25 +114,27 @@ export default function NoticesPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 스크롤 앵커 + 1회 실행 가드
   const listTopRef = useRef<HTMLDivElement | null>(null);
   const didScrollRef = useRef(false);
 
-  // 이동 시 전달된 preset을 "처음 렌더에서" 읽기
+  // preset 카테고리 정리(중복 제거 + SALE_HOUSE 제거)
   const presetCategories = useMemo(() => {
     const state = location.state as NoticePresetState | null;
     const preset = state?.preselectedCategories;
     if (!Array.isArray(preset) || preset.length === 0) return null;
-    return Array.from(new Set(preset));
+
+    const cleaned = Array.from(new Set(preset)).filter(
+      (c) => !EXCLUDED_CATEGORIES.has(c)
+    );
+    return cleaned.length > 0 ? cleaned : null;
   }, [location.state]);
 
-  // scroll 플래그도 같이 읽기
   const shouldScrollToList = useMemo(() => {
     const state = location.state as NoticePresetState | null;
     return !!state?.scrollToList;
   }, [location.state]);
 
-  // 필터 초기값에 preset 반영 (처음부터 체크된 상태)
+  // 필터 초기값도 동일하게 정리
   const [filters, setFilters] = useState<Filters>(() => {
     if (!presetCategories) return DEFAULT_FILTERS;
     return {
@@ -134,22 +145,17 @@ export default function NoticesPage() {
     };
   });
 
-  // 처음부터 펼친 상태로 시작
   const [defaultExpandFilters] = useState<boolean>(() => !!presetCategories);
 
-  // state 지우는 로직은 유지하되, "필요한 처리(스크롤) 이후"에 실행되게끔 effect 분리/순서 보장
   useEffect(() => {
     if (!presetCategories && !shouldScrollToList) return;
-    // replace로 state 제거 (뒤로가기/새로고침 시 재적용 방지)
     navigate(location.pathname, { replace: true, state: null });
   }, [presetCategories, shouldScrollToList, navigate, location.pathname]);
 
-  // 자동 스크롤: 최초 1회만
   useEffect(() => {
     if (!shouldScrollToList) return;
     if (didScrollRef.current) return;
 
-    // 렌더가 한 번 돈 뒤 스크롤되도록 rAF 사용
     requestAnimationFrame(() => {
       const el = listTopRef.current;
       if (!el) return;
@@ -159,7 +165,6 @@ export default function NoticesPage() {
     });
   }, [shouldScrollToList]);
 
-  // 정렬 상태는 Header(sortType) 기준으로만 사용
   const [sortType, setSortType] = useState<SortType>("REG_DATE");
 
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -200,7 +205,6 @@ export default function NoticesPage() {
     }
   }, []);
 
-  // 목록 로딩
   useEffect(() => {
     let ignore = false;
 
@@ -235,15 +239,29 @@ export default function NoticesPage() {
     };
   }, [loadFavorites]);
 
-  const categoryKey = useMemo(() => JSON.stringify(filters.category), [filters.category]);
-  const statusKey = useMemo(() => JSON.stringify(filters.status), [filters.status]);
+  const categoryKey = useMemo(
+    () => JSON.stringify(filters.category),
+    [filters.category]
+  );
+  const statusKey = useMemo(
+    () => JSON.stringify(filters.status),
+    [filters.status]
+  );
 
-  // 필터/정렬 변경 시 1페이지로
   useEffect(() => {
     setPage(1);
   }, [filters.keyword, categoryKey, statusKey, sortType]);
 
-  // 1) FE 필터링
+  // (안전) 혹시 어디서든 SALE_HOUSE가 주입되면 제거
+  useEffect(() => {
+    if (!filters.category?.some((c) => EXCLUDED_CATEGORIES.has(c))) return;
+
+    setFilters((prev) => ({
+      ...prev,
+      category: (prev.category ?? []).filter((c) => !EXCLUDED_CATEGORIES.has(c)),
+    }));
+  }, [filters.category]);
+
   const filtered = useMemo(() => {
     const keyword = filters.keyword.trim().toLowerCase();
 
@@ -254,17 +272,19 @@ export default function NoticesPage() {
 
       const matchCategory =
         filters.category.length === 0 ||
-        (n.category != null && filters.category.includes(n.category));
+        (n.category != null && filters.category.includes(String(n.category)));
 
       const matchStatus =
         filters.status.length === 0 ||
-        (n.status != null && filters.status.includes(n.status));
+        (() => {
+          const cs = computeNoticeStatus(n.startDate, n.endDate);
+          return cs != null && filters.status.includes(cs);
+        })();
 
       return matchKeyword && matchCategory && matchStatus;
     });
   }, [notices, filters.keyword, filters.category, filters.status]);
 
-  // 2) FE 정렬: sortType 기준(헤더 드롭다운)
   const sorted = useMemo(() => {
     const copied = [...filtered];
 
@@ -273,32 +293,21 @@ export default function NoticesPage() {
       return copied;
     }
 
-    // 마감 임박순
     const today = new Date();
-    const startOfToday = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    ).getTime();
 
     copied.sort((a, b) => {
+      const aStatus = computeNoticeStatus(a.startDate, a.endDate, today);
+      const bStatus = computeNoticeStatus(b.startDate, b.endDate, today);
+
+      const aClosed = aStatus === "CLOSED";
+      const bClosed = bStatus === "CLOSED";
+
+      if (aClosed !== bClosed) return aClosed ? 1 : -1;
+
       const aEnd = toMs(a.endDate);
       const bEnd = toMs(b.endDate);
 
-      const aClosed = aEnd < startOfToday;
-      const bClosed = bEnd < startOfToday;
-
-      // 1️. 마감 여부 우선 (마감 안 된 것 먼저)
-      if (aClosed !== bClosed) {
-        return aClosed ? 1 : -1;
-      }
-
-      // 2️. 둘 다 마감 안 됐으면 → 마감 빠른 순
-      if (!aClosed && !bClosed) {
-        return aEnd - bEnd;
-      }
-
-      // 3️. 둘 다 마감됐으면 → 최신 마감일 순(선택)
+      if (!aClosed && !bClosed) return aEnd - bEnd;
       return bEnd - aEnd;
     });
 
@@ -321,10 +330,8 @@ export default function NoticesPage() {
         n,
         daysLeft: calcDaysLeft(n.endDate),
       }))
-      // 마감 안 지난 것만 (D-1 이하는 제외)
       .filter((x) => x.daysLeft !== null && x.daysLeft >= 0 && isStarted(x.n.startDate))
-      // D-day 작은 순 (임박 우선)
-      .sort((a, b) => (a.daysLeft! - b.daysLeft!))
+      .sort((a, b) => a.daysLeft! - b.daysLeft!)
       .slice(0, 5)
       .map((x) => x.n);
   }, [notices]);

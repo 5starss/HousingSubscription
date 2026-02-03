@@ -7,9 +7,10 @@ export type ChatbotSuccessResponse = {
 };
 
 // 기본 Chatbot
-export async function postChat(message: string): Promise<string> {
+export async function postChat(message: string, noticeNo?: string | null): Promise<string> {
   const res = await apiClient.post<ChatbotSuccessResponse>("/chatbot/chat", {
-    message,
+    message: message,
+    noticeNo: noticeNo
   });
   return res.data.message;
 }

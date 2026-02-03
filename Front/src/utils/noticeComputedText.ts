@@ -1,3 +1,4 @@
+// Front\src\utils\noticeComputedText.ts => “상태 텍스트”를 최종 결정
 import { noticeStatusLabel, statusLabel } from "./noticeFormat";
 import { computeNoticeStatus, type ComputedNoticeStatus } from "./noticeStatus";
 import type { Notice } from "../pages/NoticesPage";
