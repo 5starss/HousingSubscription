@@ -20,10 +20,6 @@ public class Notice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // SH 공고 등록 번호
-    @Column(nullable = false)
-    private String noticeNo;
-
     // SH 공고 제목
     @Column(nullable = false)
     private String title;
@@ -32,11 +28,6 @@ public class Notice {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NoticeCategory category;
-
-    // SH 공고 현재 상태
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private NoticeStatus status;
 
     // SH 공고 등록일자
     private LocalDate regDate;
@@ -50,6 +41,9 @@ public class Notice {
     // SH 공고 pdf 링크
     private String pdfUrl;
 
+    // SH 공고 pdf 링크
+    private String originUrl;
+
     // SH 공고 요약본
     @Lob
     private String summary;
@@ -57,26 +51,24 @@ public class Notice {
 
     // 생성자 빌더
     @Builder
-    public Notice(String noticeNo, String title, NoticeCategory category, NoticeStatus status, LocalDate regDate, LocalDate startDate, LocalDate endDate, String pdfUrl, String summary) {
-        this.noticeNo = noticeNo;
+    public Notice(String title, NoticeCategory category, LocalDate regDate, LocalDate startDate, LocalDate endDate, String pdfUrl, String originUrl, String summary) {
         this.title = title;
         this.category = category;
-        this.status = status;
         this.regDate = regDate;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.originUrl=originUrl;
         this.pdfUrl = pdfUrl;
         this.summary =  summary;
     }
 
-    public void update(String noticeNo, String title, NoticeCategory category, NoticeStatus status, LocalDate regDate, LocalDate startDate, LocalDate endDate, String pdfUrl, String summary) {
-        this.noticeNo = noticeNo;
+    public void update(String title, NoticeCategory category, LocalDate regDate, LocalDate startDate, LocalDate endDate, String pdfUrl, String originUrl, String summary) {
         this.title = title;
         this.category = category;
-        this.status = status;
         this.regDate = regDate;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.originUrl=originUrl;
         this.pdfUrl = pdfUrl;
         this.summary = summary;
     }

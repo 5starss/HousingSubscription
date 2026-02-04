@@ -61,14 +61,13 @@ public class NoticeService {
 
         // 2. 받은 요약본과 함께 Notice 엔티티 생성
         Notice notice = Notice.builder()
-                .noticeNo(noticeRequestDto.getNoticeNo())
                 .title(noticeRequestDto.getTitle())
                 .category(noticeRequestDto.getCategory())
-                .status(noticeRequestDto.getStatus())
                 .regDate(noticeRequestDto.getRegDate())
                 .startDate(noticeRequestDto.getStartDate())
                 .endDate(noticeRequestDto.getEndDate())
                 .pdfUrl(noticeRequestDto.getPdfUrl())
+                .originUrl(noticeRequestDto.getOriginUrl())
                 .summary(summary) // FastAPI에서 받은 요약본 사용
                 .build();
         noticeRepository.save(notice);
@@ -84,14 +83,13 @@ public class NoticeService {
                 .orElseThrow(() -> new InvalidValueException("해당 공고를 찾을 수 없습니다. Id:" + noticeId));
         
         notice.update(
-                noticeRequestDto.getNoticeNo(),
                 noticeRequestDto.getTitle(),
                 noticeRequestDto.getCategory(),
-                noticeRequestDto.getStatus(),
                 noticeRequestDto.getRegDate(),
                 noticeRequestDto.getStartDate(),
                 noticeRequestDto.getEndDate(),
                 noticeRequestDto.getPdfUrl(),
+                noticeRequestDto.getOriginUrl(),
                 noticeRequestDto.getSummary()
         );
 
