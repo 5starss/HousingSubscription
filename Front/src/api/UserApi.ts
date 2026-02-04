@@ -2,7 +2,7 @@ import { apiClient } from "./axiosConfig";
 import { type UserAddInfo } from "../types/user";
 
 // 기본 정보 조회 (GET)
-export const getUserBasicInfo = async (): Promise<{ userName: string; email: string; loginId: string }> => {
+export const getUserBasicInfo = async (): Promise<{ userName: string; email: string; loginId: string; authType: string }> => {
   try{
     const response = await apiClient.get("/users/me");
     return response.data;
