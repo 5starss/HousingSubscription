@@ -24,15 +24,15 @@ const TARGET_ACTIONS = [
 ];
 const POLICY_LIST: Record<string, { label: string; value: string }[]> = {
   TARGET_NEWLYWED: [
-    { label: "신혼부부 반환보증료", value: "policy1" },
-    { label: "신혼부부 임차보증금 이자지원", value: "policy2" },
+    { label: "신혼부부반환보증료", value: "policy1" },
+    { label: "신혼부부임차보증금이자지원", value: "policy2" },
     { label: "신혼희망타운", value: "policy3" },
     { label: "행복주택", value: "policy10" },
   ],
   TARGET_YOUTH: [
     { label: "청년안심주택", value: "policy4" },
     { label: "청년월세지원", value: "policy5" },
-    { label: "청년임차보증금 이자지원", value: "policy6" },
+    { label: "청년임차보증금이자지원", value: "policy6" },
     { label: "청년전세임대", value: "policy7" },
     { label: "한지붕세대공감", value: "policy8" },
     { label: "행복기숙사", value: "policy9" },
