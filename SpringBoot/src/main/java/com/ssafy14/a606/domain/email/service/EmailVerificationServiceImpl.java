@@ -89,12 +89,22 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
      * 이메일 발송 (dev-mode면 콘솔 출력, 운영이면 EmailSender로 위임)
      */
     private void sendEmail(String to, String code) {
-        String subject = "[서울집사] 회원가입 이메일 인증 코드";
-        String content =
-                "안녕하세요, 서울집사입니다.\n\n" +
-                        "회원가입 이메일 인증 코드: " + code + "\n\n" +
-                        "이 코드는 5분간 유효합니다.\n\n" +
-                        "본인이 요청하지 않은 경우 이 메일을 무시해주세요.";
+        String subject = "[서울집사] 이메일 인증 코드";
+        String html =
+                "<div style='font-family: Arial, sans-serif; line-height: 1.6;'>" +
+
+                        "<p style='margin:0 0 10px 0;'>안녕하세요, <strong>서울집사</strong>입니다.</p>" +
+                        "<p style='margin:0 0 10px 0;'>아래 인증 코드를 입력해 주세요.</p>" +
+                        "<p style='margin:18px 0 18px 0;'>" +
+                        "<span style='font-size: 36px; font-weight: 800; letter-spacing: 10px;'>" +
+                        code +
+                        "</span>" +
+                        "</p>" +
+
+                        "<p style='margin:0 0 10px 0;'>인증 코드는 발급 후 <strong>5분 동안</strong> 유효합니다.</p>" +
+                        "<p style='margin:0 0 10px 0; color:#666;'>본인이 요청한 메일이 아니라면, 이 메일을 무시해 주세요.</p>" +
+
+                        "</div>";
 
         if (devMode) {
             log.info("========================================");
@@ -107,7 +117,8 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         }
 
         try {
-            emailSender.send(to, subject, content);
+//            emailSender.send(to, subject, content); // text/plain
+            emailSender.sendHtml(to, subject, html);  // text/html
             log.info("Email sent successfully to: {}", to);
         } catch (Exception e) {
             log.error("Failed to send email to {}: {}", to, e.getMessage(), e);
