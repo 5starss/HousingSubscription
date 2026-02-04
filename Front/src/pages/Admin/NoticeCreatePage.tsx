@@ -75,6 +75,7 @@ export default function NoticeCreatePage() {
     end_date: todayYYYYMMDD(),
     pdf: "",
     url: "",
+    summary: null,
   }));
 
   const [errors, setErrors] = useState<FieldErrors>({});

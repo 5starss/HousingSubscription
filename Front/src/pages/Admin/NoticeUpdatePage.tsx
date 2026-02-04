@@ -68,6 +68,7 @@ function toEditForm(detail: {
   endDate: string | null;
   pdfUrl: string | null;
   originUrl: string | null;
+  summary: string | null;
 }): AdminCreateNoticeRequest {
   return {
     notice_no: detail.noticeNo ?? "",
@@ -79,6 +80,7 @@ function toEditForm(detail: {
     end_date: detail.endDate ?? todayYYYYMMDD(),
     pdf: detail.pdfUrl ?? "",
     url: detail.originUrl ?? "",
+    summary: detail.summary ?? "",
   };
 }
 
@@ -106,6 +108,7 @@ export default function NoticeUpdatePage() {
     end_date: todayYYYYMMDD(),
     pdf: "",
     url: "",
+    summary: null,
   }));
 
   useEffect(() => {
@@ -151,6 +154,7 @@ export default function NoticeUpdatePage() {
             endDate: detail.endDate ?? null,
             pdfUrl: detail.pdfUrl ?? null,
             originUrl: detail.originUrl ?? null,
+            summary: detail.summary ?? null,
           })
         );
       } catch (e) {
