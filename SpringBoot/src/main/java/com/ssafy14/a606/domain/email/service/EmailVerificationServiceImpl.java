@@ -1,8 +1,11 @@
 package com.ssafy14.a606.domain.email.service;
 
 import com.ssafy14.a606.domain.email.dto.response.EmailSendCodeResponseDto;
+import com.ssafy14.a606.domain.email.dto.response.EmailVerifyCodeResponseDto;
 import com.ssafy14.a606.domain.email.store.EmailVerificationCodeStore;
+import com.ssafy14.a606.domain.email.store.EmailVerificationStatusStore;
 import com.ssafy14.a606.domain.email.util.VerificationCodeGenerator;
+import com.ssafy14.a606.global.exceptions.ExpiredVerificationCodeException;
 import com.ssafy14.a606.global.exceptions.InvalidValueException;
 import com.ssafy14.a606.global.mail.EmailSender;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +25,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private final EmailSender emailSender;
     private final EmailVerificationCodeStore codeStore;
     private final VerificationCodeGenerator codeGenerator;
+    private final EmailVerificationStatusStore statusStore;
 
     @Value("${app.email.dev-mode:true}")
     private boolean devMode;
 
     private static final Duration CODE_TTL = Duration.ofMinutes(5);
+    private static final Duration VERIFIED_TTL = Duration.ofMinutes(30);
 
+    // 이메일 인증코드 발송
     @Override
     @Transactional
     public EmailSendCodeResponseDto sendSignUpCode(String email) {
@@ -48,6 +54,35 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         return EmailSendCodeResponseDto.builder()
                 .message("EMAIL_CODE_SENT")
                 .build();
+    }
+
+    // 이메일 인증코드 검증
+    @Override
+    @Transactional
+    public EmailVerifyCodeResponseDto verifyCode(String email, String code) {
+
+        String saved = codeStore.getCode(email);
+
+        // 만료/없음 -> 410
+        if (saved == null) {
+            throw new ExpiredVerificationCodeException("인증코드가 만료되었습니다.");
+        }
+
+        // 불일치 -> 200 OK
+        if (!saved.equals(code)) {
+            return EmailVerifyCodeResponseDto.invalidCode();
+        }
+
+        // 일치 -> 코드 삭제 + verified 마킹(Redis에 저장)
+        codeStore.deleteCode(email);
+        statusStore.markVerified(email, VERIFIED_TTL);
+
+        return EmailVerifyCodeResponseDto.success();
+    }
+
+    @Override
+    public boolean isVerified(String email) {
+        return statusStore.isVerified(email);
     }
 
     /**
