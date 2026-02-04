@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { AxiosError } from "axios";
-import { apiClient } from "../../api/axiosConfig";
+import { postChat, toChatbotErrorText } from "../../api/ChatbotApi";
 import ChatMessageItem from "../chatbot/ChatMessageItem";
 
 export type ChatMessage = {
@@ -28,25 +27,7 @@ type Props = {
 //   { icon: "calculate", label: "임대료 계산" },
 // ];
 
-async function postChat(message: string, noticeId?: number | null): Promise<string> {
-  const payload = {
-    message,
-    noticeId: noticeId ?? null,
-  };
-  const res = await apiClient.post<{ message: string }>("/chatbot/chat", payload);
-  return res.data.message;
-}
-
-function toErrorText(err: unknown): string {
-  if (err && typeof err === "object" && "isAxiosError" in err) {
-    const axiosErr = err as AxiosError<{ message?: string; code?: string }>;
-    if (axiosErr.response?.data?.message) return axiosErr.response.data.message;
-    if (axiosErr.response?.status) return `오류 발생 (HTTP ${axiosErr.response.status})`;
-  }
-  return "요청 처리 중 오류가 발생했습니다.";
-}
-
-export default function NoticeChatbotPanel({ noticeTitle, noticeId }: Props) {
+export default function NoticeChatbotPanel({ noticeTitle }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -95,7 +76,7 @@ export default function NoticeChatbotPanel({ noticeTitle, noticeId }: Props) {
       setInput("");
 
       try {
-        const answer = await postChat(value, noticeId);
+        const answer = await postChat(value, noticeTitle); 
         
         const aiMsg: ChatMessage = {
           id: `ai-${Date.now()}`,
@@ -106,11 +87,12 @@ export default function NoticeChatbotPanel({ noticeTitle, noticeId }: Props) {
         };
         setMessages((prev) => [...prev, aiMsg]);
       } catch (e) {
+        // ★ [수정 3] 에러 처리도 중앙 함수 사용
         const errorMsg: ChatMessage = {
           id: `err-${Date.now()}`,
           role: "assistant",
           type: "text",
-          text: toErrorText(e),
+          text: toChatbotErrorText(e),
           createdAt: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, errorMsg]);
@@ -118,7 +100,7 @@ export default function NoticeChatbotPanel({ noticeTitle, noticeId }: Props) {
         setIsSending(false);
       }
     },
-    [isSending, noticeId]
+    [isSending, noticeTitle]
   );
 
   return (
@@ -159,23 +141,6 @@ export default function NoticeChatbotPanel({ noticeTitle, noticeId }: Props) {
 
       {/* 입력 영역 */}
       <div className="bg-white border-t border-gray-100 p-4">
-        {/* <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide">
-          {QUICK_ACTIONS.map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              disabled={isSending}
-              onClick={() => handleSendText(item.label)}
-              className="shrink-0 inline-flex items-center gap-2 px-3 py-2 rounded-full bg-gray-50 hover:bg-green-50 hover:text-green-700 transition text-xs text-gray-700 border border-transparent hover:border-green-100"
-            >
-              <span className="material-symbols-outlined text-[16px] leading-none text-primary">
-                {item.icon}
-              </span>
-              {item.label}
-            </button>
-          ))}
-        </div> */}
-
         <div className="flex items-center gap-2">
           <input
             value={input}
