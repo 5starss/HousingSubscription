@@ -14,6 +14,7 @@ import NoticeDetailPage from "../pages/NoticeDetailPage";
 import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
 import MyPage from "../pages/MyPage";
+import SocialCallback from "../pages/SocialCallback";
 
 // 놀이터 페이지
 import Playground from "../pages/Playground/Playground";
@@ -29,6 +30,7 @@ import Chatbot from "../pages/Chatbot";
 // 관리자(admin) 페이지
 import NoticeCreatePage from "../pages/Admin/NoticeCreatePage";
 import NoticeUpdatePage from "../pages/Admin/NoticeUpdatePage";
+
 
 export default function App() {
   return (
@@ -59,6 +61,7 @@ export default function App() {
             </Route>
 
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/oauth/callback" element={<SocialCallback />} />
             <Route path="/signup" element={<SignupPage />} />
             
             {/* 관리자 페이지 */}
