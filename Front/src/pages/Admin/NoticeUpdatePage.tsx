@@ -286,6 +286,18 @@ export default function NoticeUpdatePage() {
         onCancel={onCancel}
         onSubmit={onSubmit}
       />
+      { submitting && <LoadingOverlay text="요약본 생성 중입니다." /> }
     </main>
+  );
+}
+
+function LoadingOverlay({ text }: { text: string }) {
+  return (
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50">
+      <div className="rounded-xl bg-white px-6 py-4 shadow">
+        <p className="text-sm font-semibold text-gray-900">{text}</p>
+        <p className="mt-1 text-xs text-gray-500">잠시만 기다려 주세요.</p>
+      </div>
+    </div>
   );
 }
