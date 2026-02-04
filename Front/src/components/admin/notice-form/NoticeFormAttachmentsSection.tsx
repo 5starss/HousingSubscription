@@ -28,11 +28,11 @@ export default function NoticeCreateAttachmentsSection({
       <div className="mt-5 grid grid-cols-1 gap-4">
         <TextField
           label="공고 PDF 링크"
-          value={form.pdf}
+          value={form.pdfUrl}
           placeholder="https://...pdf"
-          error={errors.pdf}
+          error={errors.pdfUrl}
           helper="파일 업로드는 불가하며, 링크 저장을 권장합니다."
-          onChange={(v) => onChange("pdf", v)}
+          onChange={(v) => onChange("pdfUrl", v)}
         />
 
         <TextField
@@ -86,11 +86,11 @@ export default function NoticeCreateAttachmentsSection({
               <a
                 className={[
                   "flex-1 inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm transition-all",
-                  form.pdf
+                  form.pdfUrl
                     ? "bg-primary text-white shadow-primary/20 hover:bg-primary/90"
                     : "bg-gray-100 text-gray-400 pointer-events-none",
                 ].join(" ")}
-                href={form.pdf || undefined}
+                href={form.pdfUrl || undefined}
                 target="_blank"
                 rel="noreferrer"
               >
