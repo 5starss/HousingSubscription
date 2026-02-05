@@ -51,7 +51,7 @@ export default function LoginPage() {
     <div className="bg-white flex flex-col items-center my-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white rounded-[2rem] shadow-lg border border-gray-100 p-8 md:p-10 relative">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-50 text-primary mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
             <span className="material-symbols-outlined text-3xl">storefront</span>
           </div>
           <h2 className="text-2xl font-bold text-[#111814] mb-1">

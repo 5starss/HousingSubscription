@@ -53,7 +53,7 @@ export default function QuizResultWrong({
 
             {/* Correct Answer */}
              <div className="flex flex-col items-center flex-1">
-                <span className="text-xs text-green-500 mb-2 font-bold">진짜 정답</span>
+                <span className="text-xs text-primary mb-2 font-bold">진짜 정답</span>
                 <p className="text-xl md:text-2xl font-black text-gray-900 break-keep">
                     {correctAnswer ?? "-"}
                 </p>
@@ -80,7 +80,7 @@ export default function QuizResultWrong({
              <div className="relative z-10">
                 {/* Box Header */}
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="material-symbols-outlined text-green-600 text-lg">
+                  <span className="material-symbols-outlined text-primary text-lg">
                     info
                   </span>
                   <span className="font-bold text-gray-800 text-sm">알아두면 좋은 해설</span>
@@ -99,7 +99,7 @@ export default function QuizResultWrong({
       <button
         type="button"
         onClick={onNext}
-        className="w-full py-5 px-8 rounded-4xl bg-green-500 text-white text-lg font-bold 
+        className="w-full py-5 px-8 rounded-4xl bg-primary/100 text-white text-lg font-bold 
                    shadow-[0_4px_15px_rgba(34,197,94,0.4)] 
                    hover:brightness-105 active:scale-[0.98] transition-all
                    flex items-center justify-center gap-2 mt-6"

@@ -19,17 +19,17 @@ export default function QuizResultCorrect({
         {/* Success Icon (Double Circle Effect) */}
         <div className="mb-6 relative flex items-center justify-center w-24 h-24">
           {/* Outer Faint Circle */}
-          <div className="absolute w-24 h-24 bg-green-50 rounded-full"></div>
+          <div className="absolute w-24 h-24 bg-primary/10 rounded-full"></div>
           {/* Inner Circle */}
-          <div className="relative w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-            <span className="material-symbols-outlined text-green-500 text-4xl">
+          <div className="relative w-16 h-16 bg-primary/15 rounded-full flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary text-4xl">
               check
             </span>
           </div>
         </div>
 
         {/* Title - Reduced Size */}
-        <h4 className="text-xl font-bold text-green-500 mb-8">
+        <h4 className="text-xl font-bold text-primary mb-8">
           정답입니다!
         </h4>
 
@@ -48,7 +48,7 @@ export default function QuizResultCorrect({
           <div className="relative z-10">
             {/* Box Header */}
             <div className="flex items-center gap-2 mb-3">
-              <span className="material-symbols-outlined text-green-600 text-lg">
+              <span className="material-symbols-outlined text-primary text-lg">
                 menu_book
               </span>
               <span className="font-bold text-gray-800 text-sm">해설</span>
@@ -66,7 +66,7 @@ export default function QuizResultCorrect({
       <button
         type="button"
         onClick={onNext}
-        className="w-full py-5 px-8 rounded-4xl bg-green-500 text-white text-lg font-bold 
+        className="w-full py-5 px-8 rounded-4xl bg-primary/100 text-white text-lg font-bold 
                    shadow-[0_4px_15px_rgba(34,197,94,0.4)] 
                    hover:brightness-105 active:scale-[0.98] transition-all
                    flex items-center justify-center gap-2 mt-6"

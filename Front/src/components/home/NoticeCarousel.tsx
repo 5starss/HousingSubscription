@@ -44,7 +44,7 @@ function DDayBadge({ endDate }: { endDate: string | null }) {
     colorClass = "text-red-600"; 
   } else if (info.daysLeft <= 7) {
     // D-4 ~ D-7: 초록색
-    colorClass = "text-green-600";
+    colorClass = "text-primary";
   } else {
     // 나머지: 회색
     colorClass = "text-gray-400";

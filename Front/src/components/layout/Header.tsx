@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import seoulJibsaLogo from "../../assets/seouljibsa.png";
 
 export default function Header() {
   const { isLoggedIn, user, logout } = useAuth();
@@ -43,11 +44,13 @@ export default function Header() {
       <div className="mx-auto max-w-6xl px-4 md:px-8 py-4 flex items-center justify-between">
         {/* Left: Logo */}
         <Link to="/" onClick={handleHomeClick} className="flex items-center gap-3">
-          <div className="size-9 rounded-full bg-primary flex items-center justify-center text-white shadow-sm">
-            <span className="material-symbols-outlined text-[18px]">domain</span>
-          </div>
-          <span className="text-[15px] font-semibold text-gray-900 whitespace-nowrap">
-            서울집사 (Seoul Jibsa)
+          <img
+            src={seoulJibsaLogo}
+            alt="서울집사 로고"
+            className="h-9 w-9 object-contain"
+          />
+          <span className="text-[15px] font-bold text-gray-900 whitespace-nowrap">
+            서울집사
           </span>
         </Link>
 

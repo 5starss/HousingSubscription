@@ -567,17 +567,17 @@ export default function MyPage() {
                         <span className="text-lg font-bold text-gray-900">{getDisplayValue("income", savedData.income)}</span>
                     </div>
                     
-                    <div className="col-span-2 md:col-span-3 p-5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100 flex items-center justify-between">
+                    <div className="col-span-2 md:col-span-3 p-5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-primary/20 flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-green-600 shadow-sm border border-green-100">
+                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary shadow-sm border border-primary/20">
                                 <span className="material-symbols-outlined">home</span>
                             </div>
                             <div>
-                                <p className="text-xs text-green-600 font-bold mb-0.5 uppercase tracking-wide">Housing Status</p>
+                                <p className="text-xs text-primary font-bold mb-0.5 uppercase tracking-wide">Housing Status</p>
                                 <p className="text-green-900 font-bold text-lg">주택 보유 여부</p>
                             </div>
                         </div>
-                        <div className="px-5 py-2 bg-white rounded-xl shadow-sm border border-green-100 text-green-700 font-bold">
+                        <div className="px-5 py-2 bg-white rounded-xl shadow-sm border border-primary/20 text-primary font-bold">
                             {getDisplayValue("houseOwn", savedData.houseOwn)}
                         </div>
                     </div>

@@ -26,7 +26,7 @@ export default function PreferenceOptionList({
                 "w-full px-6 py-5 rounded-2xl cursor-pointer",
                 "border transition-colors",
                 isSelected
-                  ? "bg-green-50 border-primary"
+                  ? "bg-primary/10 border-primary"
                   : "bg-white border-gray-200 hover:border-gray-300",
               ].join(" ")}
             >
