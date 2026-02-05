@@ -32,9 +32,7 @@ async def call_gemini_api(prompt_text):
         except Exception as e:
             return f"답변 생성 중 예상치 못한 오류가 발생했습니다: {str(e)}"
 
-    # 2. 결과 파싱 로직: 숫자만 추출하여 판단 (가장 안전함)
-    clean_response = "".join(filter(str.isdigit, response))
-    return "1" in clean_response
+
 
 def expand_context(best_id, collection):
     """ID를 기반으로 앞뒤 2개씩 총 5개의 청크를 가져와 문맥을 완성합니다."""
