@@ -111,7 +111,7 @@ export default function PreferenceResultView({ answers, onRestart }: PreferenceR
     return (
       <section className="w-full">
         <div className="mx-auto max-w-5xl px-4 md:px-8 py-14 md:py-20 text-center">
-          <div className="inline-flex items-center justify-center rounded-full bg-[#E3F6ED] px-5 py-2 text-sm font-bold text-green-600 mb-6">
+          <div className="inline-flex items-center justify-center rounded-full bg-[#E3F6ED] px-5 py-2 text-sm font-bold text-primary mb-6">
             결과 계산 중
           </div>
           <h1 className="mt-2 text-2xl md:text-4xl font-extrabold text-gray-900">
@@ -169,17 +169,17 @@ export default function PreferenceResultView({ answers, onRestart }: PreferenceR
       <div className="mx-auto max-w-5xl px-4 md:px-8 py-14 md:py-20">
         {/* 상단 타이틀 및 아이콘 섹션 (변경 없음) */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center rounded-full bg-[#E3F6ED] px-5 py-2 text-sm font-bold text-green-600 mb-6">
+          <div className="inline-flex items-center justify-center rounded-full bg-[#E3F6ED] px-5 py-2 text-sm font-bold text-primary mb-6">
             테스트 완료!
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             당신의 주거 성향은:{" "}
-            <span className="text-green-500">'{highlightText}'</span>
+            <span className="text-primary">'{highlightText}'</span>
           </h1>
         </div>
 
-        <div className="relative mx-auto w-full max-w-lg aspect-square md:aspect-[5/4] bg-gradient-to-br from-green-50 to-white p-10 md:p-14 shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[40px] flex items-center justify-center mb-10 overflow-hidden">
+        <div className="relative mx-auto w-full max-w-lg aspect-square md:aspect-[5/4] bg-gradient-to-br from-primary/10 to-white p-10 md:p-14 shadow-[0_20px_60px_rgba(0,0,0,0.06)] rounded-[40px] flex items-center justify-center mb-10 overflow-hidden">
           <div className="relative z-10 h-44 w-44 md:h-52 md:w-52 bg-white rounded-[40px] shadow-md flex items-center justify-center">
             <MaterialIcon name={icons.center} sizePx={120} className="text-gray-800" />
           </div>
@@ -192,7 +192,7 @@ export default function PreferenceResultView({ answers, onRestart }: PreferenceR
 
           <div className="absolute right-[12%] top-[20%] animate-bounce" style={{ animationDelay: "500ms" }}>
             <div className="h-12 w-12 md:h-14 md:w-14 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex items-center justify-center">
-              <MaterialIcon name={icons.right} className="text-[26px] md:text-[30px] text-green-500" />
+              <MaterialIcon name={icons.right} className="text-[26px] md:text-[30px] text-primary" />
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@ export default function PreferenceResultView({ answers, onRestart }: PreferenceR
           {/* 왼쪽 카드: 추천 공고 타입 */}
           <div className="rounded-[32px] border border-gray-100 bg-white p-8 md:p-10 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col h-full">
             <div className="w-12 h-12 rounded-2xl bg-[#E3F6ED] flex items-center justify-center mb-6">
-              <MaterialIcon name="place" className="text-[24px] text-green-500" />
+              <MaterialIcon name="place" className="text-[24px] text-primary" />
             </div>
 
             <div className="mb-4">
@@ -233,8 +233,8 @@ export default function PreferenceResultView({ answers, onRestart }: PreferenceR
               <button
                 type="button"
                 onClick={goNoticeList}
-                // 배경색(bg-green-50) 제거, 텍스트 색상 및 hover 효과 변경
-                className="group flex items-center gap-1.5 py-2 px-1 rounded-full text-green-600 text-sm font-bold transition-all hover:text-green-700 active:scale-95"
+                // 배경색(bg-primary/10) 제거, 텍스트 색상 및 hover 효과 변경
+                className="group flex items-center gap-1.5 py-2 px-1 rounded-full text-primary text-sm font-bold transition-all hover:text-primary font-semibold active:scale-95"
               >
                 <span>관련 공고 보러가기</span>
                 {/* 아이콘 이동 애니메이션은 유지 */}
@@ -251,7 +251,7 @@ export default function PreferenceResultView({ answers, onRestart }: PreferenceR
           {/* 오른쪽 카드: Check Point (변경 없음) */}
           <div className="rounded-[32px] border border-gray-100 bg-white p-8 md:p-10 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="w-12 h-12 rounded-2xl bg-[#E3F6ED] flex items-center justify-center mb-6">
-              <MaterialIcon name="checklist" className="text-[24px] text-green-500" />
+              <MaterialIcon name="checklist" className="text-[24px] text-primary" />
             </div>
 
             <div className="mb-4">
@@ -262,7 +262,7 @@ export default function PreferenceResultView({ answers, onRestart }: PreferenceR
 
             <div className="mt-5 flex gap-3 items-start w-full">
               <div className="mt-0.5 min-w-[20px] h-5 w-5 flex items-center justify-center bg-white">
-                <MaterialIcon name="check" className="text-[16px] text-green-500 leading-none" />
+                <MaterialIcon name="check" className="text-[16px] text-primary leading-none" />
               </div>
 
               <p className="flex-1 korean-break text-gray-600 font-medium leading-relaxed break-keep">

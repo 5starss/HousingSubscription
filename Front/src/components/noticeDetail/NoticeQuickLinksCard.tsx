@@ -56,7 +56,7 @@ export default function NoticeQuickLinksCard({ loading, pdfUrl, originUrl }: Pro
           type="button"
           onClick={() => pdfUrl && safeExternalOpen(pdfUrl)}
           disabled={!pdfUrl}
-          className="w-full rounded-xl bg-green-400 px-4 py-3 text-left text-sm font-semibold text-gray-900 hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between"
+          className="w-full rounded-xl bg-primary px-4 py-3 text-left text-sm font-semibold text-gray-900 hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between"
         >
           <span className="flex items-center gap-3">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/70">

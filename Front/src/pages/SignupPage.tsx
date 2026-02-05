@@ -301,7 +301,7 @@ export default function SignupPage() {
                   errors.userId
                     ? "border-red-500 focus:ring-red-200"
                     : status.isIdChecked
-                    ? "border-green-500 focus:ring-green-200"
+                    ? "border-primary focus:ring-primary/30"
                     : "border-gray-200 focus:border-primary focus:ring-primary/20"
                 } outline-none transition-all`}
                 placeholder="아이디를 입력해주세요"
@@ -314,7 +314,7 @@ export default function SignupPage() {
                 ) : (
                   <p
                     className={`text-xs font-bold min-h-5 ${
-                      status.isIdChecked ? "text-green-600" : "text-red-500"
+                      status.isIdChecked ? "text-primary" : "text-red-500"
                     }`}
                   >
                     {idMessage}
@@ -358,7 +358,7 @@ export default function SignupPage() {
                 isPasswordMismatch
                   ? "border-red-500 focus:border-red-500 focus:ring-red-200"
                   : isPasswordMatch
-                  ? "border-green-500 focus:border-green-500 focus:ring-green-200"
+                  ? "border-primary focus:border-primary focus:ring-primary/30"
                   : "border-gray-200 focus:border-primary focus:ring-primary/20"
               } outline-none transition-all`}
               placeholder="비밀번호를 다시 입력해주세요"
@@ -369,7 +369,7 @@ export default function SignupPage() {
               </p>
             )}
             {isPasswordMatch && (
-              <p className="text-green-500 text-sm mt-2 ml-1 font-medium">
+              <p className="text-primary text-sm mt-2 ml-1 font-medium">
                 비밀번호가 일치합니다.
               </p>
             )}
@@ -417,7 +417,7 @@ export default function SignupPage() {
                 disabled={status.isEmailVerified}
                 className={`px-5 py-3.5 font-bold rounded-2xl transition-colors whitespace-nowrap text-sm ${
                   status.isEmailVerified
-                    ? "bg-green-100 text-green-600 cursor-default"
+                    ? "bg-primary/15 text-primary cursor-default"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -436,7 +436,7 @@ export default function SignupPage() {
                 ) : (
                   <p
                     className={`text-xs font-bold min-h-5 ${
-                      status.isEmailChecked ? "text-green-600" : "text-red-500"
+                      status.isEmailChecked ? "text-primary" : "text-red-500"
                     }`}
                   >
                     {emailMessage}

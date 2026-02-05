@@ -8,7 +8,7 @@ export default function QuizResultDone({ totalCount, correctCount, onRestart }: 
   return (
     <section className="w-full rounded-3xl bg-white shadow-sm border border-black/5 px-10 py-12 text-center">
       <div className="mx-auto w-24 h-24 rounded-full bg-emerald-50 flex items-center justify-center">
-        <span className="material-symbols-outlined text-4xl text-green-500"
+        <span className="material-symbols-outlined text-4xl text-primary"
             style={{ fontVariationSettings: "'FILL' 1" }}>
             thumb_up
         </span>
