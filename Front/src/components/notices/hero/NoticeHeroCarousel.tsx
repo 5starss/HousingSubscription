@@ -164,15 +164,11 @@ export default function NoticeHeroCarousel({
             </div>
 
             {/* 메인 텍스트: 줄바꿈 처리를 통해 가독성 확보 */}
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-white/90 drop-shadow-sm">
-              현재 모집 중인 <br /> 새로운 공고를 준비하고 있습니다.
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed md:leading-relaxed lg:leading-relaxed tracking-tight text-white/90 drop-shadow-sm">
+              현재 진행 중이거나 예정된 공고가 없습니다. 
+              <br /> 
+              <span className="block mt-2">곧 새로운 소식으로 찾아올게요!</span>
             </h2>
-
-            {/* 서브 텍스트: 날짜 영역과 위치를 맞춰 안정감 부여 */}
-            <div className="mt-6 flex items-center gap-2 text-white/50 font-medium bg-white/5 px-3 py-1.5 rounded-lg backdrop-blur-sm border border-white/5">
-              <span className="material-symbols-outlined text-[18px]">notifications_paused</span>
-              <span className="text-sm">업데이트 시 알림으로 알려드릴게요.</span>
-            </div>
           </div>
         </div>
 
@@ -190,6 +186,7 @@ export default function NoticeHeroCarousel({
   return (
     <section
       className="group relative overflow-hidden rounded-[1.2rem] bg-gray-900 text-white shadow-lg isolate transform transition-transform duration-300 min-h-[300px] md:min-h-[420px]"
+      onClick={() => navigate(`/notices/${current.id}`)}
       onMouseEnter={() => {
         pausedRef.current = true;
       }}
@@ -258,39 +255,15 @@ export default function NoticeHeroCarousel({
         </div>
       </div>
 
-      <div className="absolute bottom-20 right-25  z-30">
-        <button
-          type="button"
-          onClick={() => navigate(`/notices/${current.id}`)}
-          className="
-            group/btn cursor-pointer inline-flex items-center gap-3 
-            rounded-full 
-            bg-white/20 
-            border border-white/10 
-            backdrop-blur-md 
-            px-6 py-3 
-            text-base font-bold text-white 
-            transition-all duration-300 
-            hover:bg-white/30 hover:scale-105 
-            active:scale-95
-          "
-        >
-          공고 자세히 보기
-          <span 
-            aria-hidden 
-            className="material-symbols-outlined text-lg transition-transform duration-300 group-hover/btn:translate-x-1"
-          >
-            arrow_forward
-          </span>
-        </button>
-      </div>
-
       {/* 좌우 네비게이션 버튼 */}
       {canSlide && (
         <>
           <button
             type="button"
-            onClick={prev}
+            onClick={(e) => {
+              e.stopPropagation();
+              prev();
+            }}
             aria-label="이전 공고"
             className="
               absolute left-4 top-1/2 -translate-y-1/2 z-20
@@ -306,7 +279,10 @@ export default function NoticeHeroCarousel({
 
           <button
             type="button"
-            onClick={next}
+            onClick={(e) => {
+              e.stopPropagation();
+              next();
+            }}
             aria-label="다음 공고"
             className="
               absolute right-4 top-1/2 -translate-y-1/2 z-20
@@ -326,12 +302,15 @@ export default function NoticeHeroCarousel({
       {canSlide && (
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
           {slides.map((_, i) => {
-            const active = i === index; 
+            const active = i === index;
             return (
               <button
                 key={i}
                 type="button"
-                onClick={() => go(i)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  go(i);
+                }}
                 aria-label={`슬라이드 ${i + 1}`}
                 className={`
                   h-1.5 rounded-full transition-all duration-500 ease-out cursor-pointer

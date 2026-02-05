@@ -8,8 +8,8 @@ export type AdminCreateNoticeRequest = {
   reg_date: string; // YYYY-MM-DD
   start_date: string; // YYYY-MM-DD
   end_date: string; // YYYY-MM-DD
-  pdf: string; // URL
-  url: string; // URL
+  pdfUrl: string; // URL
+  originUrl: string; // URL
   summary: string | null; // 요약문
 };
 
@@ -38,8 +38,8 @@ function buildUpsertPayload(
     regDate: body.reg_date,
     startDate: body.start_date,
     endDate: body.end_date,
-    pdfUrl: body.pdf,
-    originUrl: body.url,
+    pdfUrl: body.pdfUrl,
+    originUrl: body.originUrl,
     summary: body.summary,
   };
 

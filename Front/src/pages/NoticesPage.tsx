@@ -81,24 +81,16 @@ function calcDaysLeft(endDate: string | null) {
   if (Number.isNaN(end.getTime())) return null;
 
   const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
   const startOfEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate());
 
   const diffMs = startOfEnd.getTime() - startOfToday.getTime();
   return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
-
-function isStarted(startDate: string | null) {
-  if (!startDate) return true;
-  const s = new Date(startDate);
-  if (Number.isNaN(s.getTime())) return true;
-
-  const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfStart = new Date(s.getFullYear(), s.getMonth(), s.getDate());
-  return startOfStart.getTime() <= startOfToday.getTime();
-}
-
 type NoticePresetState = {
   preselectedCategories?: string[];
   scrollToList?: boolean;
@@ -172,7 +164,7 @@ export default function NoticesPage() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  // ✅ [수정] 즐겨찾기 매핑에서 noticeNo / status 주입 제거 (항상 null)
+  // [수정] 즐겨찾기 매핑에서 noticeNo / status 주입 제거 (항상 null)
   const mapFavoriteToNotice = (f: FavoriteNotice): Notice => ({
     id: f.id,
     noticeNo: null,
@@ -183,8 +175,8 @@ export default function NoticesPage() {
     summary: f.summary ?? null,
     startDate: f.start_date ?? null,
     endDate: f.end_date ?? null,
-    pdfUrl: f.pdf ?? null,
-    originUrl: f.url ?? null,
+    pdfUrl: f.pdfUrl ?? null,
+    originUrl: f.originUrl ?? null,
   });
 
   const loadFavorites = useCallback(
@@ -214,39 +206,43 @@ export default function NoticesPage() {
     [isLoggedIn]
   );
 
-  useEffect(() => {
-    let ignore = false;
+  // 목록 + 즐겨찾기 재조회 함수
+  const loadNotices = useCallback(async () => {
+    setLoading(true);
+    setErrorMessage(null);
 
-    (async () => {
-      setLoading(true);
-      setErrorMessage(null);
+    try {
+      const list = await getNoticeList();
+      setNotices(list ?? []);
+      await loadFavorites(false);
+    } catch (err) {
+      const ax = err as AxiosError<ApiErrorResponse>;
+      const msg =
+        ax.response?.data?.message ||
+        ax.message ||
+        "목록을 불러오지 못했습니다.";
 
-      try {
-        const list = await getNoticeList();
-        if (ignore) return;
-
-        setNotices(list ?? []);
-        loadFavorites(ignore);
-      } catch (err) {
-        if (ignore) return;
-
-        const ax = err as AxiosError<ApiErrorResponse>;
-        const msg =
-          ax.response?.data?.message ||
-          ax.message ||
-          "목록을 불러오지 못했습니다.";
-
-        setErrorMessage(msg);
-        setNotices([]);
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    })();
-
-    return () => {
-      ignore = true;
-    };
+      setErrorMessage(msg);
+      setNotices([]);
+    } finally {
+      setLoading(false);
+    }
   }, [loadFavorites]);
+
+  // 최초 로딩
+  useEffect(() => {
+    loadNotices();
+  }, [loadNotices]);
+
+  // 생성/수정/삭제 등 공고 변경 이벤트 수신 → 재조회
+  useEffect(() => {
+    const onChanged = () => {
+      loadNotices();
+    };
+
+    window.addEventListener("notices-changed", onChanged);
+    return () => window.removeEventListener("notices-changed", onChanged);
+  }, [loadNotices]);
 
   const categoryKey = useMemo(
     () => JSON.stringify(filters.category),
@@ -331,25 +327,38 @@ export default function NoticesPage() {
     return sorted.slice(start, start + pageSize);
   }, [sorted, page]);
 
+  // 캐러셀 featured: notices 기준으로 즉시 재계산됨
   const featured = useMemo(() => {
     const base = notices ?? [];
+    if (base.length === 0) return [];
 
-    return [...base]
+    // 1) 기본: 마감일까지 남은 날짜 기준으로(청약 예정 포함) 0 이상만 노출
+    const byDeadline = [...base]
       .map((n) => ({
         n,
         daysLeft: calcDaysLeft(n.endDate),
       }))
-      .filter((x) => x.daysLeft !== null && x.daysLeft >= 0 && isStarted(x.n.startDate))
+      .filter((x) => x.daysLeft !== null && x.daysLeft >= 0)
       .sort((a, b) => a.daysLeft! - b.daysLeft!)
       .slice(0, 5)
       .map((x) => x.n);
+
+    if (byDeadline.length > 0) return byDeadline;
+
+    // 2) fallback: 혹시 endDate 파싱 실패/없음 등으로 다 걸러지면 최신 등록순으로라도 띄우기
+    return [...base]
+      .sort((a, b) => toMs(b.regDate) - toMs(a.regDate))
+      .slice(0, 5);
   }, [notices]);
 
   return (
     <div className="mx-auto md:py-8 space-y-10">
       <NoticeHeroCarousel items={featured} />
 
-      <FavoritesNoticeSection items={favorites} onChangedFavorites={loadFavorites} />
+      <FavoritesNoticeSection
+        items={favorites}
+        onChangedFavorites={loadFavorites}
+      />
 
       <div ref={listTopRef} />
 

@@ -64,8 +64,8 @@ function toEditForm(detail: {
     reg_date: detail.regDate ?? todayYYYYMMDD(),
     start_date: detail.startDate ?? todayYYYYMMDD(),
     end_date: detail.endDate ?? todayYYYYMMDD(),
-    pdf: detail.pdfUrl ?? "",
-    url: detail.originUrl ?? "",
+    pdfUrl: detail.pdfUrl ?? "",
+    originUrl: detail.originUrl ?? "",
     summary: detail.summary ?? "",
   };
 }
@@ -90,8 +90,8 @@ export default function NoticeUpdatePage() {
     reg_date: todayYYYYMMDD(),
     start_date: todayYYYYMMDD(),
     end_date: todayYYYYMMDD(),
-    pdf: "",
-    url: "",
+    pdfUrl: "",
+    originUrl: "",
     summary: null,
   }));
 
@@ -189,12 +189,12 @@ export default function NoticeUpdatePage() {
       }
     }
 
-    if (v.pdf && !/^https?:\/\//.test(v.pdf)) {
-      next.pdf =
+    if (v.pdfUrl && !/^https?:\/\//.test(v.pdfUrl)) {
+      next.pdfUrl =
         "PDF 링크(https://...)를 입력해 주세요. (파일 경로를 쓰는 경우는 백엔드 정책에 따릅니다)";
     }
-    if (v.url && !/^https?:\/\//.test(v.url)) {
-      next.url = "원본 링크는 https://... 형태로 입력해 주세요.";
+    if (v.originUrl && !/^https?:\/\//.test(v.originUrl)) {
+      next.originUrl = "원본 링크는 https://... 형태로 입력해 주세요.";
     }
 
     setErrors(next);
@@ -210,6 +210,8 @@ export default function NoticeUpdatePage() {
     try {
       setSubmitting(true);
       const data = await patchAdminUpdateNotice(noticeId, form);
+
+      window.dispatchEvent(new Event("notices-changed"));
 
       const nextId = (data as { id?: number }).id ?? noticeId;
       navigate(`/notices/${nextId}`, { replace: true });
