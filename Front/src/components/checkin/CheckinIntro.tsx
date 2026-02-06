@@ -22,7 +22,7 @@ export default function CheckinIntro({ onComplete }: IntroProps) {
       <section className="h-full w-full flex-shrink-0 snap-start flex flex-col items-center justify-center bg-white px-6 text-center">
         <div className="max-w-2xl space-y-8">
           <FadeInWhenVisible delay="0.2s">
-            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight break-keep">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight break-keep">
               안녕하세요!<br />
               <span className="text-primary">서울집사</span> 방문이 처음이신가요?
             </h1>
@@ -66,7 +66,7 @@ export default function CheckinIntro({ onComplete }: IntroProps) {
       >
         <div className="max-w-2xl space-y-6">
           <FadeInWhenVisible delay="0.2s">
-            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight break-keep">
+            <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight break-keep">
               청약이 처음인 당신을 위해,<br />
               <span className="text-primary">서울집사</span>가 마중 나왔습니다.
             </h1>
@@ -93,7 +93,7 @@ export default function CheckinIntro({ onComplete }: IntroProps) {
       <section className="h-full w-full flex-shrink-0 snap-start flex flex-col items-center justify-center bg-gray-50 px-6 text-center">
         <div className="max-w-3xl space-y-6">
           <FadeInWhenVisible delay="0.2s">
-            <h2 className="text-2xl md:text-5xl font-bold text-gray-800 leading-snug break-keep">
+            <h2 className="text-2xl md:text-5xl font-extrabold text-gray-800 leading-snug break-keep">
               막막한 시작이 <span className="text-primary">확신</span>이 되도록,<br />
               당신의 든든한 가이드가 되어 드릴게요.
             </h2>
@@ -123,7 +123,7 @@ export default function CheckinIntro({ onComplete }: IntroProps) {
         <div className="max-w-3xl flex flex-col items-center justify-center space-y-10">
           
           <FadeInWhenVisible delay="0.2s">
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight break-keep">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight break-keep">
               본격적인 탐색 전,<br />
               집사와 함께 <span className="relative inline-block">
                 <span className="absolute -bottom-2 left-0 w-full h-3 bg-primary/20 -z-10"></span>
