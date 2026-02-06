@@ -4,7 +4,7 @@ import { useUIStore } from "../store/uiStore";
 
 // 레이아웃 및 인증 관련
 import Layout from "../components/layout/Layout";
-import ChatbotLayout from "../components/chatbot/ChatbotLayout";
+import FullLayout from "../components/layout/FullLayout";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import ScrollToTop from "../components/common/ScrollToTop";
 import AlertModal from "../components/modals/AlertModal";
@@ -19,9 +19,9 @@ import MyPage from "../pages/MyPage";
 import SocialCallback from "../pages/SocialCallback";
 
 // 놀이터 페이지
-import Playground from "../pages/Playground/Playground";
-import Quiz from "../pages/Playground/Quiz";
-import Preference from "../pages/Playground/Preference";
+import Checkin from "../pages/Checkin/Checkin";
+import Quiz from "../pages/Checkin/Quiz";
+import Preference from "../pages/Checkin/Preference";
 
 // 404 Not Found 페이지
 import NotFoundPage from "../pages/NotFoundPage";
@@ -52,13 +52,6 @@ export default function App() {
               <Route path=":noticeId" element={<NoticeDetailPage />} />
             </Route>
 
-            {/* 놀이터 관련 */}
-            <Route path="/playground">
-              <Route index element={<Playground />} />
-              <Route path="quiz" element={<Quiz />} />
-              <Route path="preference" element={<Preference />} />
-            </Route>
-
             {/* 인증이 필요한 페이지 */}
             <Route element={<ProtectedRoute />}>
               <Route path="/mypage" element={<MyPage />} />
@@ -76,10 +69,17 @@ export default function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Route>
 
-          {/* 챗봇 페이지: ChatbotLayout 적용 */}
-          <Route element={<ChatbotLayout />}>
+          {/* FullLayout */}
+          <Route element={<FullLayout />}>
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/chatbot/*" element={<NotFoundPage />} />
+
+            {/* 놀이터 관련 */}
+            <Route path="/checkin">
+              <Route index element={<Checkin />} />
+              <Route path="quiz" element={<Quiz />} />
+              <Route path="preference" element={<Preference />} />
+            </Route>
           </Route>
 
         </Routes>

@@ -1,11 +1,11 @@
-// Front/src/pages/Playground/Quiz.tsx
+// Front/src/pages/Checkin/Quiz.tsx
 import { useEffect, useState } from "react";
 
-import QuizHeader from "../../components/playground/quiz/QuizHeader";
-import QuizQuestionView from "../../components/playground/quiz/QuizQuestionView";
-import QuizResultCorrect from "../../components/playground/quiz/QuizResultCorrect";
-import QuizResultWrong from "../../components/playground/quiz/QuizResultWrong";
-import QuizResultDone from "../../components/playground/quiz/QuizResultDone";
+import QuizHeader from "../../components/checkin/quiz/QuizHeader";
+import QuizQuestionView from "../../components/checkin/quiz/QuizQuestionView";
+import QuizResultCorrect from "../../components/checkin/quiz/QuizResultCorrect";
+import QuizResultWrong from "../../components/checkin/quiz/QuizResultWrong";
+import QuizResultDone from "../../components/checkin/quiz/QuizResultDone";
 
 import {
   getQuizStart,
@@ -156,8 +156,8 @@ export default function Quiz() {
       : currentQuestion?.options.find((o) => o.optionId === selectedOptionId)?.text ?? "";
 
   return (
-    <main className="flex-1 px-4 md:px-20 lg:px-40 py-12 flex flex-col items-center">
-      <div className="w-full max-w-3xl flex flex-col gap-8">
+    <main className="flex-1 px-4 md:px-12 lg:px-16 py-10 flex flex-col items-center">
+      <div className="w-full max-w-2xl flex flex-col gap-2">
         <QuizHeader
           currentIndex={Math.min(currentIndex, questions.length - 1)}
           totalCount={questions.length}

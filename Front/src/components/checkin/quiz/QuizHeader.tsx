@@ -9,8 +9,8 @@ type QuizHeaderProps = {
 export default function QuizHeader({
   currentIndex,
   totalCount,
-  title = "오늘의 퀴즈",
-  subtitle = "주거 용어 마스터하기",
+  title = "퀴즈로 확인하는 나의 청약 감각",
+  subtitle = "청약 용어 퀴즈",
   isLoading = false,
 }: QuizHeaderProps) {
   const safeTotal = Math.max(0, totalCount);
