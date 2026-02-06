@@ -14,7 +14,7 @@ async def call_gemini_api(prompt_text):
     headers = {"Content-Type": "application/json", "x-goog-api-key": gms_key}
     payload = {
         "contents": [{"parts": [{"text": prompt_text}]}],
-        "generationConfig": {"temperature": 0.1, "maxOutputTokens": 3000}
+        "generationConfig": {"temperature": 0.1, "maxOutputTokens": 9000}
     }
 
     # httpx를 사용하여 Non-blocking으로 API 호출
@@ -64,14 +64,14 @@ async def get_rag_answer(user_question: str, collection, title: str):
     where_clause = {"title": title}
     results = collection.query(
         query_texts=[user_question],
-        n_results=1,
+        n_results=3,
         where=where_clause,
         include=["documents", "metadatas", "distances"]
     )
     is_relevant_result = False
     if results and results['ids'] and results['ids'][0]:
         # 결과가 있을 경우, 유사도 임계값(Threshold) 확인
-        if results['distances'][0][0] <= 0.8:
+        if results['distances'][0][0] <= 0.6:
             # actual_distance = results['distances'][0][0]
             # print(f"DEBUG >>> 질문: {user_question} | 측정된 거리: {actual_distance:.4f}")
             is_relevant_result = True
@@ -87,7 +87,7 @@ async def get_rag_answer(user_question: str, collection, title: str):
                 "2. 정부나 시의 주거 [정책]\n"
                 "3. 부동산/건축 관련 전문 [용어/키워드]\n\n"
                 "당신은 주제({title})의 이름을 보고 어떤 카테고리인지 스스로 판단한 뒤, 전달된 질문에 대해 '주거 맥락'에서 가장 정확한 정보를 제공해야 합니다. "
-                "만약 [{title}]이 전문 용어라면 그 정의와 주거 생활에서의 의미를 설명하고, 공고나 정책이라면 일반적인 절차나 혜택을 안내하세요.\n\n"
+                "만약 [{title}]이 전문 용어라면 그 정의와 주거 생활에서의 의미를 설명하고, 공고나 정책이라면 어떠한 건지 찾아보고 질문에 맞춰 답을 만드세요.\n\n"
                 "ex) [question]은 [title]인것 같습니다 -> 처럼 검증과정은 굳이 사용자에서 설명 할 필요 없습니다. 그냥 사용자 질문에 대답만 하시면 됩니다."
 
                 "모든 답변은 마크다운 기호 사용을 해야합니다. 그래서 강조하거나 이모티콘을 넣어 가독성을 꼭 좋게 답변을 만드세요. "
@@ -106,8 +106,13 @@ async def get_rag_answer(user_question: str, collection, title: str):
     else:
         # 2-2. 검색 결과가 유효할 경우: RAG 답변 생성
         # 3. 문맥 확장 (슬라이딩 윈도우 방식으로 주변 텍스트 병합)
-        best_id = results['ids'][0][0]
-        final_context = expand_context(best_id, collection)
+
+        # 유사도 1개일때
+        # best_id = results['ids'][0][0]
+        # final_context = expand_context(best_id, collection)
+
+        #유사도 n개
+        final_context = "\n\n".join(results['documents'][0])
 
         # 4. 프롬프트 구성 (시스템 역할을 통한 전문가 페르소나 부여)
         prompt_template = ChatPromptTemplate.from_messages([
