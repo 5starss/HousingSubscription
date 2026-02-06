@@ -14,14 +14,12 @@ export default function QuizResultCorrect({
   return (
     <>
       {/* Result Card */}
-      <div className="bg-white w-full rounded-3xl p-8 md:p-12 flex flex-col items-center text-center shadow-[0_10px_40px_rgba(0,0,0,0.05)] relative overflow-hidden">
+      <div className="bg-white w-full rounded-3xl p-6 flex flex-col items-center text-center shadow-[0_10px_40px_rgba(0,0,0,0.05)] relative overflow-hidden">
         
         {/* Success Icon (Double Circle Effect) */}
-        <div className="mb-6 relative flex items-center justify-center w-24 h-24">
-          {/* Outer Faint Circle */}
-          <div className="absolute w-24 h-24 bg-primary/10 rounded-full"></div>
-          {/* Inner Circle */}
-          <div className="relative w-16 h-16 bg-primary/15 rounded-full flex items-center justify-center">
+        <div className="mb-2 relative flex items-center justify-center w-15 h-15">
+          {/* Circle */}
+          <div className="relative w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center">
             <span className="material-symbols-outlined text-primary text-4xl">
               check
             </span>
@@ -29,14 +27,14 @@ export default function QuizResultCorrect({
         </div>
 
         {/* Title - Reduced Size */}
-        <h4 className="text-xl font-bold text-primary mb-8">
+        <h4 className="text-lg font-bold text-primary mb-8">
           정답입니다!
         </h4>
 
         {/* Answer Display */}
         <div className="flex flex-col items-center mb-10 w-full">
           <span className="text-xs text-gray-400 mb-2 font-medium">선택한 정답</span>
-          <p className="text-3xl md:text-4xl font-black text-gray-900 break-keep leading-tight">
+          <p className="text-2xl md:text-3xl font-black text-gray-900 break-keep leading-tight">
             {correctAnswer ?? "-"}
           </p>
         </div>

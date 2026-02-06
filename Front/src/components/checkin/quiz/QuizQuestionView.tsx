@@ -26,12 +26,6 @@ export default function QuizQuestionView({
     <>
       {/* Question Card */}
       <div className="bg-white w-full rounded-3xl p-10 md:p-16 flex flex-col items-center text-center shadow-[0_10px_40px_rgba(0,0,0,0.05)] relative overflow-hidden">
-        <div className="mb-8 w-16 h-16 bg-primary/10 rounded-4xl flex items-center justify-center">
-          <span className="material-symbols-outlined text-primary text-4xl">
-            quiz
-          </span>
-        </div>
-
         <h4 className="text-xl md:text-2xl font-bold leading-relaxed break-keep max-w-2xl text-gray-800">
           {question ?? "문제를 불러오는 중입니다."}
         </h4>
@@ -40,7 +34,7 @@ export default function QuizQuestionView({
       {/* Options + Submit */}
       <div className="w-full flex flex-col gap-4 mt-6">
         {/* Options */}
-        <div className="w-full flex flex-col gap-3">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
           {options.length === 0 ? (
             <div className="w-full px-8 py-5 rounded-2xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-gray-100 text-gray-400 text-sm text-center">
               보기를 불러오는 중입니다.
@@ -56,13 +50,14 @@ export default function QuizQuestionView({
                   disabled={disabled}
                   onClick={() => onChangeOption(opt.optionId)}
                   className={[
-                    "w-full text-left px-6 py-5 rounded-2xl border transition-all duration-200 ease-in-out relative group",
+                    "w-full h-full text-left px-6 py-5 rounded-2xl border transition-all duration-200 ease-in-out relative group",
                     "active:scale-[0.99]",
                     disabled ? "opacity-50 cursor-not-allowed" : (selected ? "" : "hover:border-primary/30 hover:bg-gray-50"),
                     selected
                       ? "bg-primary/5 border-primary shadow-md shadow-primary/10 z-10"
                       : "bg-white border-gray-100 shadow-[0_2px_5px_rgba(0,0,0,0.03)]",
                   ].join(" ")}
+
                 >
                   <div className="flex items-start gap-4">
                     <div
@@ -82,7 +77,7 @@ export default function QuizQuestionView({
 
                     {/* Option Text */}
                     <p className={[
-                      "text-lg md:text-xl break-keep leading-snug transition-all",
+                      "text-lg md:text-lg break-keep leading-snug transition-all",
                       selected ? "font-bold text-primary" : "font-medium text-gray-700"
                     ].join(" ")}>
                       {opt.text}

@@ -156,8 +156,8 @@ export default function Quiz() {
       : currentQuestion?.options.find((o) => o.optionId === selectedOptionId)?.text ?? "";
 
   return (
-    <main className="flex-1 px-4 md:px-20 lg:px-40 py-12 flex flex-col items-center">
-      <div className="w-full max-w-3xl flex flex-col gap-8">
+    <main className="flex-1 px-4 md:px-12 lg:px-16 py-10 flex flex-col items-center">
+      <div className="w-full max-w-2xl flex flex-col gap-2">
         <QuizHeader
           currentIndex={Math.min(currentIndex, questions.length - 1)}
           totalCount={questions.length}
