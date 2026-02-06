@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import PreferenceHeader from "../../components/playground/preference/PreferenceHeader";
-import PreferenceQuestion from "../../components/playground/preference/PreferenceQuestion";
-import PreferenceOptionList from "../../components/playground/preference/PreferenceOptionList";
-import PreferenceFooterNav from "../../components/playground/preference/PreferenceFooterNav";
-import PreferenceResultView from "../../components/playground/preference/PreferenceResultView";
+import PreferenceHeader from "../../components/checkin/preference/PreferenceHeader";
+import PreferenceQuestion from "../../components/checkin/preference/PreferenceQuestion";
+import PreferenceOptionList from "../../components/checkin/preference/PreferenceOptionList";
+import PreferenceFooterNav from "../../components/checkin/preference/PreferenceFooterNav";
+import PreferenceResultView from "../../components/checkin/preference/PreferenceResultView";
 import { preferenceQuestions } from "../../data/preferenceQuestions";
 
 type AnswerMap = Record<string, string>;

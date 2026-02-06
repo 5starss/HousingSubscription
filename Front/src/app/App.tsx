@@ -19,9 +19,9 @@ import MyPage from "../pages/MyPage";
 import SocialCallback from "../pages/SocialCallback";
 
 // 놀이터 페이지
-import Playground from "../pages/Playground/Playground";
-import Quiz from "../pages/Playground/Quiz";
-import Preference from "../pages/Playground/Preference";
+import Checkin from "../pages/Checkin/Checkin";
+import Quiz from "../pages/Checkin/Quiz";
+import Preference from "../pages/Checkin/Preference";
 
 // 404 Not Found 페이지
 import NotFoundPage from "../pages/NotFoundPage";
@@ -53,8 +53,8 @@ export default function App() {
             </Route>
 
             {/* 놀이터 관련 */}
-            <Route path="/playground">
-              <Route index element={<Playground />} />
+            <Route path="/checkin">
+              <Route index element={<Checkin />} />
               <Route path="quiz" element={<Quiz />} />
               <Route path="preference" element={<Preference />} />
             </Route>

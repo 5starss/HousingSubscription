@@ -64,7 +64,7 @@ export default function Header() {
             className="h-9 w-9 object-contain"
           />
           
-          {/* 텍스트 전환 영역: overflow-hidden이 있어야 나가는 글자가 안 보입니다 */}
+          {/* 텍스트 전환 영역 */}
           <span className="text-[15px] font-semibold text-gray-900 whitespace-nowrap overflow-hidden relative w-[110px] h-[22px]">
             
             {/* 한글: showKorean이 true일 때 중앙, false일 때 아래(full)로 이동 */}
@@ -92,16 +92,16 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Center: Nav (생략 - 기존과 동일) */}
+        {/* Center: Nav*/}
         <nav className="hidden md:flex items-center gap-6 lg:gap-8">
           <NavLink to="/" onClick={handleHomeClick} className={navClass}>홈</NavLink>
+          <NavLink to="/checkin" className={navClass}>집사의 체크인</NavLink>
           <NavLink to="/notices" className={navClass}>SH 공고 찾기</NavLink>
           <NavLink to="/chatbot" className={navClass}>AI 채팅</NavLink>
-          <NavLink to="/playground" className={navClass}>청약 놀이터</NavLink>
           <NavLink to="/mypage" className={navClass}>마이페이지</NavLink>
         </nav>
 
-        {/* Right: Actions (생략 - 기존과 동일) */}
+        {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-4">
           {isLoggedIn && user ? (
             <div className="flex items-center gap-2 sm:gap-4">
@@ -127,14 +127,14 @@ export default function Header() {
           </button>
         </div>
       </div>
-      {/* 모바일 메뉴 드롭다운 (생략 - 기존과 동일) */}
+      {/* 모바일 메뉴 드롭다운 */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-lg animate-fade-in-down">
           <nav className="flex flex-col py-2">
             <NavLink to="/" className={mobileNavClass} onClick={closeMenu}>홈</NavLink>
             <NavLink to="/notices" className={mobileNavClass} onClick={closeMenu}>SH 공고 찾기</NavLink>
             <NavLink to="/chatbot" className={mobileNavClass} onClick={closeMenu}>AI 채팅</NavLink>
-            <NavLink to="/playground" className={mobileNavClass} onClick={closeMenu}>청약 놀이터</NavLink>
+            <NavLink to="/checkin" className={mobileNavClass} onClick={closeMenu}>청약 놀이터</NavLink>
             <NavLink to="/mypage" className={mobileNavClass} onClick={closeMenu}>마이페이지</NavLink>
           </nav>
         </div>

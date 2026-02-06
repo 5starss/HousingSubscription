@@ -1,11 +1,11 @@
-// Front/src/pages/Playground/Quiz.tsx
+// Front/src/pages/Checkin/Quiz.tsx
 import { useEffect, useState } from "react";
 
-import QuizHeader from "../../components/playground/quiz/QuizHeader";
-import QuizQuestionView from "../../components/playground/quiz/QuizQuestionView";
-import QuizResultCorrect from "../../components/playground/quiz/QuizResultCorrect";
-import QuizResultWrong from "../../components/playground/quiz/QuizResultWrong";
-import QuizResultDone from "../../components/playground/quiz/QuizResultDone";
+import QuizHeader from "../../components/checkin/quiz/QuizHeader";
+import QuizQuestionView from "../../components/checkin/quiz/QuizQuestionView";
+import QuizResultCorrect from "../../components/checkin/quiz/QuizResultCorrect";
+import QuizResultWrong from "../../components/checkin/quiz/QuizResultWrong";
+import QuizResultDone from "../../components/checkin/quiz/QuizResultDone";
 
 import {
   getQuizStart,

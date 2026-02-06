@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export default function Playground() {
+export default function Checkin() {
     const navigate = useNavigate();
 
     return (
@@ -37,7 +37,7 @@ export default function Playground() {
                 <div>
                     <button
                         type="button"
-                        onClick={() => navigate("/playground/quiz")}
+                        onClick={() => navigate("/checkin/quiz")}
                         className="inline-flex items-center justify-center rounded-full bg-white px-6 py-2 text-sm font-semibold text-primary shadow-sm hover:brightness-95 active:scale-[0.98] transition"
                     >
                         도전하기
@@ -73,7 +73,7 @@ export default function Playground() {
                 <div>
                     <button
                         type="button"
-                        onClick={() => navigate("/playground/preference")}
+                        onClick={() => navigate("/checkin/preference")}
                         className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-2 text-sm font-semibold text-white shadow-md shadow-primary/25 hover:brightness-105 active:scale-[0.98] transition"
                     >
                         검사 시작
