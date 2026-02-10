@@ -88,8 +88,7 @@
 <div id="6"></div>
 
 ## 🎥 소개 영상
-
-<video src="Docs/videos/intro.mp4" controls width="800"></video>
+- [소개 영상 보기](Docs/videos/intro.mp4)
 
 
 ## 👪 팀원 소개
@@ -107,7 +106,7 @@
       </a>
     </td>
     <td align="center" width="150px">
-      <a href="https://github.com/person003333" target="_blank">
+      <a href="https://github.com/yundda" target="_blank">
         <img src="Docs/images/team3.png" alt="윤다선 프로필" />
       </a>
     </td>
@@ -122,19 +121,19 @@
       </a>
     </td>
     <td align="center" width="150px">
-      <a href="https://github.com/limejin" target="_blank">
+      <a href="https://github.com/qqjiwoon" target="_blank">
         <img src="Docs/images/team6.png" alt="홍지운 프로필" />
       </a>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <a href="https://github.com/Jo-wonbin" target="_blank">
+      <a href="https://github.com/mingy1206" target="_blank">
         이민기<br />(AI, Infra & 팀장)
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/dudqo225" target="_blank">
+      <a href="https://github.com/seoyeong5864" target="_blank">
         박서영<br />(Back-end)
       </a>
     </td>
@@ -144,17 +143,17 @@
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/JeongHwan-dev" target="_blank">
+      <a href="https://github.com/Mrjeonmacho" target="_blank">
         전기정<br />(AI, Back-end)
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/sojjeong" target="_blank">
+      <a href="https://github.com/5starss" target="_blank">
         조원혁<br />(Front-end)
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/limejin">
+      <a href="https://github.com/qqjiwoon">
         홍지운<br />(Front-end)
       </a>
     </td>
@@ -165,16 +164,13 @@
 
 <br />
 
-|  이름  |        역할        | <div align="center">개발 내용</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| :----: | :----------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 이민기 | AI, Infra<br />팀장 | - (팀장) 프로젝트 리딩 및 일정/진행 관리<br />- 기획<br />&nbsp;&nbsp;&nbsp;&nbsp;- 프로젝트 주제 선정<br />&nbsp;&nbsp;&nbsp;&nbsp;- 기획안 작성<br />- 설계/산출물<br />&nbsp;&nbsp;&nbsp;&nbsp;- 요구사항 정의서 작성<br />&nbsp;&nbsp;&nbsp;&nbsp;- 기능 명세서 작성<br />&nbsp;&nbsp;&nbsp;&nbsp;- 서비스/시스템 아키텍처 구성 및 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- 간트 차트 페이지 생성(일정 시각화)<br />- Infra/배포 환경 구축<br />&nbsp;&nbsp;&nbsp;&nbsp;- 인프라 설치<br />&nbsp;&nbsp;&nbsp;&nbsp;- Jenkins 배포 Pipeline 구축<br />- AI 개발(문서 기반 기능 준비)<br />&nbsp;&nbsp;&nbsp;&nbsp;- 공고/정책 PDF 수집 및 임베딩용 변환<br />&nbsp;&nbsp;&nbsp;&nbsp;- PDF 마크다운 변환(전처리)<br />&nbsp;&nbsp;&nbsp;&nbsp;- 종류별 상세 공고 PDF 텍스트 변환<br />&nbsp;&nbsp;&nbsp;&nbsp;- 종류별 주요 정책 PDF 텍스트 변환<br />&nbsp;&nbsp;&nbsp;&nbsp;- 청약/부동산 용어 PDF 텍스트 변환<br />&nbsp;&nbsp;&nbsp;&nbsp;- 챗봇 시나리오 설계                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| 박서영 |      Back-end      | - DB 설계<br />- Spring Boot로 RESTful API 작성<br />&nbsp;&nbsp;&nbsp;&nbsp;- 로그인 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 회원가입 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 아이디 찾기 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 비밀번호 재설정 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 회원 정보 조회 및 수정 도메인 개발<br />- SMTP Server, Redis를 이용한 이메일 인증 기능 구현<br />- 스프링 시큐리티, JWT를 이용한 인증 구현<br />- EC2 인프라 환경 세팅<br />- 프론트엔드, 백엔드 EC2 배포<br />- Github Action, Jenkins, Docker를 활용한 CI/CD<br />- Letsencrypt, Certbot을 이용한 서비스 SSL 보안 적용<br />- Nginx 웹서버 적용(Load Balancing, Reverse Proxy, Service Redirect 설정)                                                                                                                                                                                                                                                                                                                                                                           |
-| 윤다선 |      Back-end      | - DB 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- 기술 스택 데이터 전처리<br />&nbsp;&nbsp;&nbsp;&nbsp;- 교육생 인증 데이터 전처리<br />- 서버에 기술 스택 이미지 업로드<br />- Spring Boot로 RESTful API 작성<br />&nbsp;&nbsp;&nbsp;&nbsp;- 기술 스택 조회 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 팀 생성/수정/삭제 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 팀 상세보기 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 팀 탈퇴 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 팀 리스트 검색 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 팀 합류/지원 요청 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 팀 합류/지원 메세지 조회 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 팀 합류/지원 요청 응답 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 교육생 상세보기 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 교육생 리스트 검색 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 교육생 프로젝트 트랙 선택 서비스 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 참여 중인 팀 조회 서비스 도메인 개발                                       |
-| 전기정 |     AI, Back-end      | - '싸피 메이트' 서비스 기획<br />- 서비스 메인 홈 페이지 개발<br />- 팀 공고, 교육생 공고 정보 제공 및 검색 서비스 개발<br />- 팀 생성 · 수정 · 삭제 · 탈퇴 서비스 개발<br />- 팀 합류 요청 및 팀 지원 요청 서비스 개발<br />- 404 Not Found 페이지 개발<br />- 팀, 교육생 공고 목록 페이지, 상세 정보 페이지의 Skeleton UI 구현<br />- 'Redux', 'React-Query'를 이용한 상태관리<br />- 'Emotion'을 이용한 CSS-in-JS 방식으로 스타일링 구현 <br />- 'Media Query'와 'React-Responsive'를 이용한 반응형 웹 구현<br />- 검색 엔진 최적화(SEO) 작업<br />&nbsp;&nbsp;&nbsp;&nbsp;- Meta Data들을 설정하고 체계화된 Heading 처리 및 시멘틱 마크업 사용,<br />&nbsp;&nbsp;&nbsp;&nbsp;- SEO Score 100점 달성<br />- 웹 성능 최적화 작업<br />&nbsp;&nbsp;&nbsp;&nbsp;- 'Lazy Loading' 적용<br />&nbsp;&nbsp;&nbsp;&nbsp;- 이미지 파일 최적화 등을 통해 웹 성능 최적화 진행<br />&nbsp;&nbsp;&nbsp;&nbsp;- Performance Score 62점 → 88점으로 개선<br />&nbsp;&nbsp;&nbsp;&nbsp;- Speed Index 속도 3.5초 → 1.3초로 개선<br />- 'Mock Service Worker'를 이용해 목업 API 구현하여 API 테스트 진행 |
-| 조원혁 |     Front-end      | - Emotion을 이용한 CSS-in-JS 방식으로 스타일링 작업<br />- Media Query를 이용한 반응형 UI 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- MUI를 이용해 모바일, 태블릿 등의 뷰포트에 따른 채팅 목록 Drawer 적용<br />- Custom hook을 이용한 채팅 입력 상태 관리<br />- Socket.io를 이용한 WebRTC 채팅 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- 1:1 실시간 채팅 구현, 메시지 주고 받기<br />&nbsp;&nbsp;&nbsp;&nbsp;- Socket의 namespace를 나누어 사용자가 타인의 채팅방에 접속하는 것 제한<br />&nbsp;&nbsp;&nbsp;&nbsp;- Socket으로 로그인, 로그아웃 상태를 전달해 접속 중인 사용자의 온라인 상태 동기화<br />- SWR을 이용한 채팅 목록, 채팅 내역 상태 관리 및 비동기 API 처리<br />&nbsp;&nbsp;&nbsp;&nbsp;- 채팅 내역 스크롤 이동에 따른 데이터 페이징 API 처리, 무한 스크롤링 구현<br />- Mock Service Worker를 이용해 목업 API 구현하여 백엔드 API 설계 이전 API 테스팅 진행                                                                                                                                                                                                                          |
-| 홍지운 |     Front-end      | - 회원가입 서비스 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- React-hook-form 을 이용한 회원가입 form 관리<br />&nbsp;&nbsp;&nbsp;&nbsp;- 이메일 인증을 통한 회원가입 구현<br />- 로그인<br />&nbsp;&nbsp;&nbsp;&nbsp;- Redux, Redux Saga를 통한 회원 정보 상태 관리<br />- 회원 정보 수정 서비스 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- React custom hook 사용<br />&nbsp;&nbsp;&nbsp;&nbsp;- Redux, Redux-Saga를 통한 회원 정보 상태 관리<br />- Redux를 통한 전역 Alert 서비스 개발<br />- 아이디찾기, 비밀번호 재설정 서비스 개발<br />- 입력값에 대한 유효성 검사를 통해 불필요한 통신 최소화<br />- Emotion을 이용한 CSS-in-JS 방식으로 스타일링 작업<br />- 미디어 쿼리를 이용한 반응형 구현<br />- Mock Service Worker를 이용해 목업 API 구현하여 백엔드 API 설계 이전 API 테스팅 진행                                                                                                                                                                                                                                                                                                      |
+| 이름 | 역할 | 주요 수행 내용 |
+|---|---|---|
+| 이민기 | 팀장, AI, Infra | - 프로젝트 리딩 및 일정/진행 관리<br />&nbsp;&nbsp;&nbsp;&nbsp;- Jira 일정 관리 및 배분<br />- 설계/산출물<br />&nbsp;&nbsp;&nbsp;&nbsp;- 서비스/시스템 아키텍처 구성 및 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- 간트 차트 페이지 생성(일정 시각화)<br />- Infra/배포 환경 구축<br />&nbsp;&nbsp;&nbsp;&nbsp;- GCP 인프라 설치(운영 서버 및 DB)<br />&nbsp;&nbsp;&nbsp;&nbsp;- SSAFY AWS EC2 Jenkins Pipeline 구축<br />- AI 개발(문서 기반 기능 준비)<br />&nbsp;&nbsp;&nbsp;&nbsp;- 공고/정책 PDF 수집 및 임베딩용 변환<br />&nbsp;&nbsp;&nbsp;&nbsp;- PDF 텍스트 변환<br />&nbsp;&nbsp;&nbsp;&nbsp;- PDF 변환 텍스트 검수<br />&nbsp;&nbsp;&nbsp;&nbsp;- 챗봇 시나리오 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- 발표 시연 |
+| 박서영 | BE | - DB 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- RDB(MySQL) 스키마 설계 및 구축<br />- Spring Boot 기반 RESTful API 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 로컬 로그인 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- OAuth2 기반 구글·카카오 소셜 로그인 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 회원가입 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 회원 기본/추가 정보 조회 및 수정 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 아이디 찾기 도메인 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 회원 탈퇴 도메인 개발(탈퇴 시 인증 정보 및 토큰 정리)<br />- 이메일 인증 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- SMTP Server·Redis 기반 인증 코드 발송 및 검증<br />- 인증/인가 및 토큰 관리<br />&nbsp;&nbsp;&nbsp;&nbsp;- JWT 토큰 생성 및 관리 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- Spring Security + JWT 기반 인증·인가 처리<br />&nbsp;&nbsp;&nbsp;&nbsp;- Redis 기반 로그아웃 및 토큰 재발급 플로우 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- RefreshToken Rotation 적용(재사용 방지/무효화 처리) |
+| 윤다선 | BE | - DB 설계 및 데이터 구성<br />&nbsp;&nbsp;&nbsp;&nbsp;- RDB(MySQL) 스키마 설계 및 구축<br />&nbsp;&nbsp;&nbsp;&nbsp;- 핵심 도메인 관계 설계 및 매핑<br />&nbsp;&nbsp;&nbsp;&nbsp;- 퀴즈 구조 기반 데이터 적재 SQL 작성 및 적용<br />- 인증/권한 관련 수정<br />&nbsp;&nbsp;&nbsp;&nbsp;- Admin 권한 API 경로 분리<br />- Spring Boot + JPA 기반 RESTful API 서버 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 찜(즐겨찾기) 기능 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 게임 도메인 기능 개발<br />- 주거 성향 테스트<br />&nbsp;&nbsp;&nbsp;&nbsp;- 응답 기반 점수 계산<br />&nbsp;&nbsp;&nbsp;&nbsp;- 결과 응답(추천 카테고리 포함) 제공<br />- 용어 퀴즈(객관식)<br />&nbsp;&nbsp;&nbsp;&nbsp;- 랜덤 문제 제공(보기 포함)<br />&nbsp;&nbsp;&nbsp;&nbsp;- 선택 기반 채점 및 해설 응답 제공 |
+| 전기정 | AI, BE | - DB 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- RDB(MySQL) 스키마 설계 및 구축<br />&nbsp;&nbsp;&nbsp;&nbsp;- Vector DB(ChromaDB) 설계 및 구축(챗봇 RAG 활용)<br />- Spring Boot 기반 RESTful API 서버 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 공고(Notice) 도메인 개발(CRUD, 검색, 필터링)<br />&nbsp;&nbsp;&nbsp;&nbsp;- 사용자 맞춤형 공고 추천/조회 기능 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 관리자 기능 개발(공고 관리 등)<br />- FastAPI 기반 AI/챗봇 API 서버 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 한국어 임베딩 모델 기반 인덱싱 파이프라인 구축(벡터 변환 → ChromaDB 저장)<br />&nbsp;&nbsp;&nbsp;&nbsp;- LangChain·ChromaDB 활용 RAG 챗봇 기능 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- 공고 내용 요약(Summarization) API 구현 |
+| 조원혁 | FE | - 인증/회원 흐름 UI 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- 로그인 / 소셜로그인 / 회원가입 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- 로그인 인증 여부 확인 구현<br />- 마이페이지 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- 회원 기본 정보 조회 / 수정<br />&nbsp;&nbsp;&nbsp;&nbsp;- 회원 추가 정보 조회 / 수정<br />&nbsp;&nbsp;&nbsp;&nbsp;- 회원 탈퇴<br />- 공고 상세 페이지 구현<br />- AI 챗봇 UI/UX 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- 대화 흐름 및 Quick Action 인터페이스 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- AI 챗봇 응답·AI 요약 섹션 마크다운 렌더링 구현<br />- 스타일/테마<br />&nbsp;&nbsp;&nbsp;&nbsp;- Tailwind v4 기반 테마 제어 |
+| 홍지운 | FE | - 메인 홈/랜딩/온보딩(집사의 체크인) 화면 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- Hero Search, 공고 캐러셀, 단계형 스크롤 인터랙션 구현<br />- 청약 공고 조회 UI 개발<br />&nbsp;&nbsp;&nbsp;&nbsp;- 공고 목록·상세 페이지 구성, 상태별 UI 분기 처리<br />&nbsp;&nbsp;&nbsp;&nbsp;- Optimistic UI 기반 즐겨찾기(찜) 기능 구현<br />- 대화형 안내(채팅) UI 구현<br />&nbsp;&nbsp;&nbsp;&nbsp;- 메시지 리스트/입력 영역/자동 스크롤 처리<br />- 청약 용어 퀴즈 및 주거 성향 테스트 개발<br />- 프론트엔드 구조 및 컴포넌트 아키텍처 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- 폴더 구조 설계, 도메인 단위 컴포넌트 분리<br />&nbsp;&nbsp;&nbsp;&nbsp;- React + TypeScript 기반 컴포넌트 개발<br />- 상태/라우팅 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- Zustand 기반 전역 UI 상태 관리(Alert·Modal) 및 라우팅 구조 설계<br />&nbsp;&nbsp;&nbsp;&nbsp;- Protected Route 적용<br />- UI 품질 개선<br />&nbsp;&nbsp;&nbsp;&nbsp;- Tailwind CSS 기반 반응형 UI 및 Skeleton UI 적용 |
 
-<br />
-
-<div id="10"></div>
 
