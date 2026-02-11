@@ -97,32 +97,26 @@
   <tr>
     <td align="center" width="150px">
       <a href="https://github.com/mingy1206" target="_blank">
-        <img src="Docs/images/team1.png" alt="이민기 프로필" />
       </a>
     </td>
     <td align="center" width="150px">
       <a href="https://github.com/seoyeong5864" target="_blank">
-        <img src="Docs/images/team2.png" alt="박서영 프로필" />
       </a>
     </td>
     <td align="center" width="150px">
       <a href="https://github.com/yundda" target="_blank">
-        <img src="Docs/images/team3.png" alt="윤다선 프로필" />
       </a>
     </td>
     <td align="center" width="150px">
       <a href="https://github.com/Mrjeonmacho" target="_blank">
-        <img src="Docs/images/team4.png" alt="전기정 프로필" />
       </a>
     </td>
     <td align="center" width="150px">
       <a href="https://github.com/5starss" target="_blank">
-        <img src="Docs/images/team5.png" alt="조원혁 프로필" />
       </a>
     </td>
     <td align="center" width="150px">
       <a href="https://github.com/qqjiwoon" target="_blank">
-        <img src="Docs/images/team6.png" alt="홍지운 프로필" />
       </a>
     </td>
   </tr>
